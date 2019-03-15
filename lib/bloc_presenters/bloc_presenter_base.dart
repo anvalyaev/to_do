@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import '../interactor/accessor_controller.dart';
 import '../interactor/actions/action_base.dart';
 import '../interactor/notifications/notification_base.dart';
@@ -7,31 +6,29 @@ import '../interactor/notifications/notification_base.dart';
 abstract class BlocPresenterBase {
   AccessorController _controller = new AccessorController();
   List<StreamSubscription> _subscriptions = [];
-  Set<int> _myNotifications = new Set<int>();
-  Map<int, Function> _actionResults = {};
-  Set<Property> _properties = new Set<Property>();
+  Set<int> _myNotifications = {};
+  Set<int> _myActions = {};
+  Set<Output> _properties = new Set<Output>();
   Set<Input> _inputs = new Set<Input>();
 
   BlocPresenterBase() {
     print("New bloc presenter: $runtimeType");
   }
-  void executeAction(ActionBase action,
-      {void onResult(ActionBase resultAction)}) {
-    if (onResult != null) {
-      _actionResults[action.id] = onResult;
-      bool isMyAction(ActionBase action) {
-        return _actionResults.containsKey(action.id);
-      }
+  Future<T> execute<T extends ActionBase>(T action) {
+    bool isMyAction(ActionBase action) {
+      return _myActions.contains(action.id);
+    }
 
-      void onNotify(ActionBase action) {
-        _actionResults[action.id](action);
-        _actionResults.remove(action.id);
+    Future<T> streamHandler() async {
+      T res;
+      await for (T value in _controller.actionStream.where(isMyAction)) {
+        res = value;
+        _myActions.remove(value.id);
       }
-
-      _subscriptions
-          .add(_controller.actionStream.where(isMyAction).listen(onNotify));
+      return res;
     }
     _controller.addAction(action);
+    return streamHandler();
   }
 
   void subscribeTo(NotificationBase notification,
@@ -59,7 +56,7 @@ abstract class BlocPresenterBase {
     }
     _myNotifications.clear();
 
-    for (Property property in _properties) {
+    for (Output property in _properties) {
       property.dispose();
     }
 
@@ -70,11 +67,11 @@ abstract class BlocPresenterBase {
   }
 }
 
-class Property<T> {
+class Output<T> {
   T _value;
   StreamController<T> _controller = StreamController<T>();
 
-  Property.of(BlocPresenterBase bloc_presenter, T initial) {
+  Output.of(BlocPresenterBase bloc_presenter, T initial) {
     value = initial;
     bloc_presenter._properties.add(this);
   }
@@ -85,26 +82,23 @@ class Property<T> {
 
   T get value => _value;
   Stream<T> get stream => _controller.stream;
-  void dispose(){
+  void dispose() {
     _controller.close();
   }
-
 }
 
 class Input<T> {
   StreamController<T> _controller = StreamController<T>();
   Input.of(BlocPresenterBase bloc_presenter, {void handler(T data)}) {
-    if(handler != null) addHandler(handler);
+    if (handler != null) addHandler(handler);
     bloc_presenter._inputs.add(this);
   }
-  void addHandler(void handler(data)){
+  void addHandler(void handler(data)) {
     _controller.stream.listen(handler);
   }
 
   void handle(T data) => _controller.sink.add(data);
-  void dispose(){
+  void dispose() {
     _controller.close();
   }
 }
-
-
