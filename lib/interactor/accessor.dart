@@ -1,7 +1,6 @@
 import "dart:async";
 import 'dart:isolate';
 import 'package:gate/gate.dart';
-import 'package:sembast/sembast.dart';
 import 'entities/index.dart' as entities;
 import 'data_stores/index.dart' as data_stores;
 import 'actions/action_base.dart';
@@ -9,10 +8,10 @@ import 'notifications/notification_base.dart';
 export 'data_stores/index.dart';
 export 'entities/index.dart';
 
-
-
 class Accessor extends Worker {
   data_stores.IDatabase _database;
+  entities.IAccount _account;
+  entities.IToDoList _toDoList;
   List<entities.EntityBase> _activeModels = [];
   List<NotificationBase> _notifications = [];
   StreamController<entities.EntityBase> _controller =
@@ -23,9 +22,7 @@ class Accessor extends Worker {
   });
   Map<String, dynamic> mainThreadData;
 
-
   Accessor(SendPort sendPort) : super(sendPort);
-
 
   data_stores.IDatabase get database {
     if (_database == null) {
@@ -34,8 +31,20 @@ class Accessor extends Worker {
     return _database;
   }
 
-  void initialize() {
+  entities.IAccount get account {
+    if (_account == null) {
+      _account = new entities.Account(_controller, database);
+    }
+    return _account;
   }
+
+  entities.IToDoList get toDoList {
+    if (_toDoList == null) {
+      _toDoList = new entities.ToDoList(_controller, database);
+    }
+    return _toDoList;
+  }
+  void initialize() {}
 
   onNewMessage(dynamic data) {
     print("New message from controller: $data");
@@ -63,7 +72,8 @@ class Accessor extends Worker {
     });
   }
 
-  void _testNotification(NotificationBase notification, entities.EntityBase entity) {
+  void _testNotification(
+      NotificationBase notification, entities.EntityBase entity) {
     if (notification.whenNotify(entity)) {
       notification.grabData(entity);
       send(notification);

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 abstract class EntityBase {
+  
+  StreamController<EntityBase> _controller;
   EntityBase(this._controller) {
       modelChanged();
   }
@@ -8,6 +10,7 @@ abstract class EntityBase {
     _controller.sink.add(this);
   }
   
-  void init();
-  StreamController<EntityBase> _controller;
+  void initialize();
+  void reload();
+
 }

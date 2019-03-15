@@ -34,9 +34,9 @@ class _ApplicationState extends State<Application> {
       ],
       supportedLocales: apptranslator.supportedLocales(),
       theme: ApplicationThemeData.themeData(),
-      home: BlocPresenterProvider<bloc_presenters.Initial>(
-        child: pages.Initial(),
-        bloc: bloc_presenters.Initial(),
+      home: BlocPresenterProvider<bloc_presenters.ToDoList>(
+        child: pages.ToDoList(),
+        bloc: bloc_presenters.ToDoList(),
       ),
       onGenerateRoute: (RouteSettings settings) =>
           MaterialPageRoute(builder: (BuildContext context) {
@@ -57,7 +57,16 @@ class _ApplicationState extends State<Application> {
                 return pages.ToDoList();
                 break;
               case '/Main/ToDoList/ToDoEdit':
-                return pages.ToDoEdit();
+                return BlocPresenterProvider<bloc_presenters.ToDoEdit>(
+                  child: pages.ToDoEdit(),
+                  bloc: bloc_presenters.ToDoEdit.edit(settings.arguments),
+                );
+                break;
+              case '/Main/ToDoList/ToDoCreate':
+                return BlocPresenterProvider<bloc_presenters.ToDoEdit>(
+                  child: pages.ToDoEdit(),
+                  bloc: bloc_presenters.ToDoEdit(),
+                );
                 break;
               default:
                 return pages.Dummy(settings.name);

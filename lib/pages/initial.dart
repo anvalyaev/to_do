@@ -21,7 +21,7 @@ class Initial extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: (){
-          bloc.incrementButton.handle(null);
+          bloc.incrementButton.add(null);
         },
       ),
     );

@@ -27,6 +27,7 @@ abstract class BlocPresenterBase {
       }
       return res;
     }
+
     _controller.addAction(action);
     return streamHandler();
   }
@@ -93,11 +94,11 @@ class Input<T> {
     if (handler != null) addHandler(handler);
     bloc_presenter._inputs.add(this);
   }
-  void addHandler(void handler(data)) {
+  void addHandler(void handler(T data)) {
     _controller.stream.listen(handler);
   }
 
-  void handle(T data) => _controller.sink.add(data);
+  void add(T data) => _controller.sink.add(data);
   void dispose() {
     _controller.close();
   }
