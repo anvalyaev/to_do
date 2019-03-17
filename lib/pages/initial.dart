@@ -8,22 +8,9 @@ class Initial extends StatelessWidget {
     final bloc_presenters.Initial bloc = BlocPresenterProvider.of<bloc_presenters.Initial>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Stream version of the Counter App')),
       body: Center(
-        child: StreamBuilder<int>(
-          stream: bloc.counter.stream,
-          initialData: 0,
-          builder: (BuildContext context, AsyncSnapshot<int> snapshot){
-            return Text('You hit me: ${snapshot.data} times');
-          }
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: (){
-          bloc.incrementButton.add(null);
-        },
-      ),
+        child: Icon(Icons.check_box, size: 60),
+      )
     );
   }
 }

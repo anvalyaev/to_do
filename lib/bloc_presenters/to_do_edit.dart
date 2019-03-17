@@ -15,6 +15,29 @@ class ToDoEdit extends BlocPresenterBase {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
+  final List<Color> colors = [
+    Color(0xFF662233),
+    Color(0xFF885566),
+    Color(0xFF330022),
+    Color(0xFF113322),
+    Color(0xFF336644),
+    Color(0xFF669944),
+    Color(0xFF112200),
+    Color(0xFF446611),
+    Color(0xFF99bb66),
+    Color(0xFF99aa22),
+    Color(0xFFccdd22),
+    Color(0xFFffffcc),
+    Color(0xFFeeee66),
+    Color(0xFFccbb88),
+    Color(0xFF776633),
+    Color(0xFFaa8855),
+    Color(0xFF332211),
+    Color(0xFFaa4433),
+    Color(0xFF663333),
+    Color(0xFF881111),
+  ];
+
   ToDoEdit() {
     color = Output.of(this, 0xFFFFFFFF);
     busy = Output.of(this, false);
@@ -22,7 +45,7 @@ class ToDoEdit extends BlocPresenterBase {
       color.value = data;
     });
     saveItem = Input.of(this, handler: (data) {
-      if(busy.value) return;
+      if (busy.value) return;
       busy.value = true;
       if (toDoItemId == null) {
         execute(actions.AddToDoItem(
@@ -31,6 +54,7 @@ class ToDoEdit extends BlocPresenterBase {
                 color: color.value))
             .whenComplete(() {
           busy.value = false;
+          Navigator.of(data).pop();
         });
       } else {
         execute(actions.EditToDoItem(toDoItemId,
@@ -39,6 +63,7 @@ class ToDoEdit extends BlocPresenterBase {
                 color: color.value))
             .whenComplete(() {
           busy.value = false;
+          Navigator.of(data).pop();
         });
       }
     });

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../bloc_presenters/index.dart' as bloc_presenters;
 import '../bloc_presenters/bloc_presenter_provider.dart';
 import '../interactor/data_stores/database/repositories/to_do_item.dart';
+import '../utilities/translations/apptranslations.dart';
 
 class ToDoList extends StatelessWidget {
   @override
@@ -10,7 +11,7 @@ class ToDoList extends StatelessWidget {
         BlocPresenterProvider.of<bloc_presenters.ToDoList>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('TO DO')),
+      appBar: AppBar(title: Text(Translation.of(context).text("to_do_list"))),
       body: StreamBuilder(
           stream: bloc.list.stream,
           initialData: bloc.list.value,

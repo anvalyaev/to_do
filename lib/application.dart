@@ -34,9 +34,9 @@ class _ApplicationState extends State<Application> {
       ],
       supportedLocales: apptranslator.supportedLocales(),
       theme: ApplicationThemeData.themeData(),
-      home: BlocPresenterProvider<bloc_presenters.ToDoList>(
-        child: pages.ToDoList(),
-        bloc: bloc_presenters.ToDoList(),
+      home: BlocPresenterProvider<bloc_presenters.Initial>(
+        child: pages.Initial(),
+        bloc: bloc_presenters.Initial(),
       ),
       onGenerateRoute: (RouteSettings settings) =>
           MaterialPageRoute(builder: (BuildContext context) {

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'apptranslations.dart';
 import 'apptranslator.dart';
 
-class AppTranslationsDelegate extends LocalizationsDelegate<Tr> {
+class AppTranslationsDelegate extends LocalizationsDelegate<Translation> {
   final Locale newLocale;
 
   const AppTranslationsDelegate({this.newLocale});
@@ -14,12 +14,12 @@ class AppTranslationsDelegate extends LocalizationsDelegate<Tr> {
   }
 
   @override
-  Future<Tr> load(Locale locale) {
-    return Tr.load(newLocale ?? locale);
+  Future<Translation> load(Locale locale) {
+    return Translation.load(newLocale ?? locale);
   }
 
   @override
-  bool shouldReload(LocalizationsDelegate<Tr> old) {
+  bool shouldReload(LocalizationsDelegate<Translation> old) {
     AppTranslationsDelegate tr = old as AppTranslationsDelegate;
     return (newLocale != tr.newLocale);
   }

@@ -13,7 +13,7 @@ abstract class IToDoList extends EntityBase {
 }
 
 class ToDoList extends IToDoList {
-  List<ToDoItem> _toDoList;
+  List<ToDoItem> _toDoList = [];
   SembastDataBase _database;
 
   ToDoList(StreamController<EntityBase> controller, this._database)
