@@ -44,7 +44,9 @@ class Accessor extends Worker {
     }
     return _toDoList;
   }
-  void initialize() {}
+  void initialize() {
+    toDoList.initialize();
+  }
 
   onNewMessage(dynamic data) {
     print("New message from controller: $data");

@@ -34,6 +34,7 @@ class _BlocProviderState<T>
 
   @override
   Widget build(BuildContext context) {
+    widget.bloc.doInitiate(context);
     return widget.child;
   }
 }

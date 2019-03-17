@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import '../interactor/accessor_controller.dart';
 import '../interactor/actions/action_base.dart';
 import '../interactor/notifications/notification_base.dart';
@@ -10,26 +11,34 @@ abstract class BlocPresenterBase {
   Set<int> _myActions = {};
   Set<Output> _properties = new Set<Output>();
   Set<Input> _inputs = new Set<Input>();
+  bool initiated = false;
 
   BlocPresenterBase() {
     print("New bloc presenter: $runtimeType");
   }
-  Future<T> execute<T extends ActionBase>(T action) {
-    bool isMyAction(ActionBase action) {
-      return _myActions.contains(action.id);
-    }
+  void doInitiate(BuildContext context){
+    if(initiated) return;
+    initiate(context);
+    initiated = true;
+  }
+  void initiate(BuildContext context);
 
-    Future<T> streamHandler() async {
-      T res;
-      await for (T value in _controller.actionStream.where(isMyAction)) {
-        res = value;
-        _myActions.remove(value.id);
+  Future<T> execute<T extends ActionBase>(T action) async {
+    T actionRes;
+    _myActions.add(action.id);
+    _controller.addAction(action);
+
+    print("Execute start: ${action.id}");
+
+    await _controller.actionStream.any((ActionBase action) {
+      bool res = _myActions.contains(action.id);
+      if (res) {
+        _myActions.remove(action.id);
+        actionRes = action as T;
       }
       return res;
-    }
-
-    _controller.addAction(action);
-    return streamHandler();
+    });
+    return actionRes;
   }
 
   void subscribeTo(NotificationBase notification,
@@ -46,6 +55,7 @@ abstract class BlocPresenterBase {
   }
 
   void dispose() {
+
     print("Dispose bloc presenter: $runtimeType");
     for (StreamSubscription subscription in _subscriptions) {
       subscription.cancel();
@@ -65,6 +75,7 @@ abstract class BlocPresenterBase {
       input.dispose();
     }
     _myNotifications.clear();
+    initiated = false;
   }
 }
 

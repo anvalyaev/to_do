@@ -54,7 +54,10 @@ class _ApplicationState extends State<Application> {
                 );
                 break;
               case '/Main/ToDoList':
-                return pages.ToDoList();
+                return BlocPresenterProvider<bloc_presenters.ToDoList>(
+                  child: pages.ToDoList(),
+                  bloc: bloc_presenters.ToDoList(),
+                );
                 break;
               case '/Main/ToDoList/ToDoEdit':
                 return BlocPresenterProvider<bloc_presenters.ToDoEdit>(

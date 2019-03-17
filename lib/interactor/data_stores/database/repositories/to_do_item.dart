@@ -2,7 +2,6 @@ import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
 import '../database.dart';
 
-
 class ToDoItem {
   String id = Uuid().v4();
   String title = "";
@@ -38,7 +37,7 @@ class SembastToDoItemRepository implements ToDoItemRepository {
       colorKey: item.color,
       doneKey: item.done
     };
-    var oldToDoItemList = await _database.db.get(toDoItemsKey) as List<Map>;
+    var oldToDoItemList = await _database.db.get(toDoItemsKey) as List;
     var newListToDoItem;
     if (oldToDoItemList == null) {
       newListToDoItem = [newToDoItem];
@@ -59,8 +58,15 @@ class SembastToDoItemRepository implements ToDoItemRepository {
       doneKey: item.done
     };
 
-    var oldToDoItem = await _database.db
-        .findKey(Finder(filter: Filter.equal(idKey, item.id)));
+    var oldToDoItemList = await _database.db.get(toDoItemsKey) as List;
+    var newListToDoItem = oldToDoItemList;
+
+    int index = newListToDoItem.indexWhere((value) {
+      Map toDoItemMap = value as Map;
+      return toDoItemMap[idKey] == item.id;
+    });
+    newListToDoItem.removeAt(index);
+    _database.db.update(newListToDoItem, toDoItemsKey);
   }
 
   Future edit(ToDoItem item) async {
@@ -72,15 +78,23 @@ class SembastToDoItemRepository implements ToDoItemRepository {
       doneKey: item.done
     };
 
-    var oldToDoItem = await _database.db
-        .findKey(Finder(filter: Filter.equal(idKey, item.id)));
+    var oldToDoItemList = await _database.db.get(toDoItemsKey) as List;
+    var newListToDoItem = oldToDoItemList;
+
+    int index = newListToDoItem.indexWhere((value) {
+      Map toDoItemMap = value as Map;
+      return toDoItemMap[idKey] == item.id;
+    });
+    newListToDoItem.replaceRange(index, index + 1, [toDoItem]);
+    _database.db.update(newListToDoItem, toDoItemsKey);
   }
 
   Future<List<ToDoItem>> getAll() async {
     List<ToDoItem> res = [];
-    var oldToDoItemList = await _database.db.get(toDoItemsKey) as List<Map>;
+    var oldToDoItemList = await _database.db.get(toDoItemsKey) as List;
 
-    oldToDoItemList.forEach((Map toDoItemMap) {
+    oldToDoItemList.forEach((value) {
+      Map toDoItemMap = value as Map;
       ToDoItem toDoItem = new ToDoItem();
       toDoItem.id = toDoItemMap[idKey];
       toDoItem.title = toDoItemMap[titleKey];

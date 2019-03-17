@@ -17,12 +17,16 @@ class ToDoEdit extends StatelessWidget {
             bloc.saveItem.add(context);
           },
         ),
-        body: Column(
+        body: Padding(
+          padding: EdgeInsets.all(12),
+          child:Column(
             children: <Widget>[
               TextField(
                 controller: bloc.titleController,
                 decoration: InputDecoration(
-                  labelText: Translation.of(context).text("title_helper"),
+                  border: InputBorder.none,
+                  labelText: Translation.of(context).text("title"),
+                  hintText: Translation.of(context).text("title_helper"),
                 ),
               ),
               Divider(height: 5),
@@ -32,30 +36,31 @@ class ToDoEdit extends StatelessWidget {
                   maxLines: 100,
                   decoration: InputDecoration(
                     border: InputBorder.none,
+                    // labelText: Translation.of(context).text("description"),
                     hintText:
                         Translation.of(context).text("description_helper"),
                   ),
                 ),
               ),
-              Divider(height: 5),
-              Container(
-                height: 60,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index >= bloc.colors.length) return null;
-                    return SizedBox(
-                      height: 55,
-                      width: 55,
-                      child: Card(
-                        color: bloc.colors[index],
-                      ),
-                    );
-                  },
-                ),
-              )
+              // Divider(height: 5),
+              // Container(
+              //   height: 60,
+              //   child: ListView.builder(
+              //     scrollDirection: Axis.horizontal,
+              //     itemBuilder: (BuildContext context, int index) {
+              //       if (index >= bloc.colors.length) return null;
+              //       return SizedBox(
+              //         height: 55,
+              //         width: 55,
+              //         child: Card(
+              //           color: bloc.colors[index],
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // )
             ],
           ),
-        );
+        ));
   }
 }

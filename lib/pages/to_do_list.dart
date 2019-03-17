@@ -21,17 +21,31 @@ class ToDoList extends StatelessWidget {
               return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text(snapshot.data[index].title),
-                    subtitle: Text(snapshot.data[index].description),
-                    leading: Checkbox(
-                      value: snapshot.data[index].done,
-                      onChanged: (bool val) {
-                        bloc.changeStatusItem.add(bloc_presenters.ChangeStatusItemData(
-                            snapshot.data[index].id, val));
+                  return Dismissible(
+                      key: Key(snapshot.data[index].id),
+                      onDismissed: (direction) {
+                        bloc.removeItem.add(snapshot.data[index].id);
                       },
-                    ),
-                  );
+                      child: Card(
+                        child: ListTile(
+                          title: Text(snapshot.data[index].title),
+                          subtitle: Text(snapshot.data[index].description),
+                          trailing: IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              bloc.showEditItem.add(snapshot.data[index].id);
+                            },
+                          ),
+                          leading: Checkbox(
+                            value: snapshot.data[index].done,
+                            onChanged: (bool val) {
+                              bloc.changeStatusItem.add(
+                                  bloc_presenters.ChangeStatusItemData(
+                                      snapshot.data[index].id, val));
+                            },
+                          ),
+                        ),
+                      ));
                 },
               );
             }

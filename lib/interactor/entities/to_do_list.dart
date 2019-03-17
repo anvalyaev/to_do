@@ -59,7 +59,7 @@ class ToDoList extends IToDoList {
     if (color != null) res.color = color;
     if (done != null) res.done = done;
 
-    toDoList.replaceRange(index, index, [res]);
+    toDoList.replaceRange(index, index + 1, [res]);
     modelChanged();
     return res;
   }

@@ -11,20 +11,15 @@ class ChangeStatusItemData {
   final bool done;
 }
 
-class ShowEditItemData {
-  ShowEditItemData(this.id, this.context);
-  final String id;
-  final BuildContext context;
-}
-
 class ToDoList extends BlocPresenterBase {
   Output<List<ToDoItem>> list;
   Input<String> removeItem;
   Input<ChangeStatusItemData> changeStatusItem;
-  Input<BuildContext> showCreateItem;
-  Input<ShowEditItemData> showEditItem;
+  Input showCreateItem;
+  Input<String> showEditItem;
 
-  ToDoList() {
+  @override
+  void initiate(BuildContext context) {
     list = Output.of(this, []);
     removeItem = Input.of(this, handler: (data) {
       execute(actions.RemoveToDoItem(data)).whenComplete(() {
@@ -37,12 +32,16 @@ class ToDoList extends BlocPresenterBase {
       });
     });
     showEditItem = Input.of(this, handler: (data) {
-      Navigator.of(data.context).pushNamed('/Main/ToDoList/ToDoEdit', arguments: data.id);
+      Navigator.of(context)
+          .pushNamed('/Main/ToDoList/ToDoEdit', arguments: data);
     });
     showCreateItem = Input.of(this, handler: (data) {
-      Navigator.of(data).pushNamed('/Main/ToDoList/ToDoCreate');
+      Navigator.of(context).pushNamed('/Main/ToDoList/ToDoCreate');
     });
 
+    execute(actions.GetToDoList()).then((actions.GetToDoList action){
+      list.value = action.items;
+    });
     subscribeTo(notifications.ToDoListNotifier(),
         (NotificationBase notification) {
       notifications.ToDoListNotifier notificationRes =

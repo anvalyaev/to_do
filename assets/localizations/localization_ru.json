@@ -1,4 +1,10 @@
 {
     "ok": "Ок",
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "to_do_list": "Список дел",
+    "to_do_edit": "Дело",
+    "title_helper": "Введите название дела",
+    "description_helper": "Введите описание дела",
+    "title": "Название дела",
+    "description": "Описание дела"
 }

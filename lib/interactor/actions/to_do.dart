@@ -74,3 +74,15 @@ class GetToDoItem extends ActionBase {
     onCompleate(this);
   }
 }
+
+class GetToDoList extends ActionBase {
+  List<ToDoItem> items;
+
+  GetToDoList();
+  @override
+  void doAction(Accessor accessor, void onCompleate(ActionBase result)) {
+    IToDoList toDoList = accessor.toDoList;
+    items = toDoList.toDoList;
+    onCompleate(this);
+  }
+}
