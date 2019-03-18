@@ -3,7 +3,7 @@ import 'package:uuid/uuid.dart';
 import '../database.dart';
 
 class ToDoItem {
-  String id = Uuid().v4();
+  String id = "todoitem_${Uuid().v4()}";
   String title = "";
   String description = "";
   int color = 0xFFFFFFFF;
@@ -37,36 +37,17 @@ class SembastToDoItemRepository implements ToDoItemRepository {
       colorKey: item.color,
       doneKey: item.done
     };
-    var oldToDoItemList = await _database.db.get(toDoItemsKey) as List;
-    var newListToDoItem;
-    if (oldToDoItemList == null) {
-      newListToDoItem = [newToDoItem];
-      await _database.db.put(newListToDoItem, toDoItemsKey);
-    } else {
-      newListToDoItem = oldToDoItemList;
-      newListToDoItem.add(newToDoItem);
-      await _database.db.update(newListToDoItem, toDoItemsKey);
+    var oldToDoItem = await _database.db.get(item.id) as Map;
+    if (oldToDoItem == null) {
+      await _database.db.put(newToDoItem, item.id);
     }
   }
 
   Future remove(ToDoItem item) async {
-    Map toDoItem = {
-      idKey: item.id,
-      titleKey: item.title,
-      descriptionKey: item.description,
-      colorKey: item.color,
-      doneKey: item.done
-    };
-
-    var oldToDoItemList = await _database.db.get(toDoItemsKey) as List;
-    var newListToDoItem = oldToDoItemList;
-
-    int index = newListToDoItem.indexWhere((value) {
-      Map toDoItemMap = value as Map;
-      return toDoItemMap[idKey] == item.id;
-    });
-    newListToDoItem.removeAt(index);
-    await _database.db.update(newListToDoItem, toDoItemsKey);
+    bool contains = await _database.db.containsKey(item.id);
+    if (contains) {
+      await _database.db.delete(item.id);
+    }
   }
 
   Future edit(ToDoItem item) async {
@@ -78,24 +59,22 @@ class SembastToDoItemRepository implements ToDoItemRepository {
       doneKey: item.done
     };
 
-    var oldToDoItemList = await _database.db.get(toDoItemsKey) as List;
-    var newListToDoItem = oldToDoItemList;
-
-    int index = newListToDoItem.indexWhere((value) {
-      Map toDoItemMap = value as Map;
-      return toDoItemMap[idKey] == item.id;
-    });
-    if(index == -1) return;
-    newListToDoItem.replaceRange(index, index + 1, [toDoItem]);
-    await _database.db.update(newListToDoItem, toDoItemsKey);
+    var oldToDoItem = await _database.db.get(item.id) as Map;
+    if (oldToDoItem == null) {
+      await _database.db.put(toDoItem, item.id);
+    } else {
+      await _database.db.update(toDoItem, item.id);
+    }
   }
 
   Future<List<ToDoItem>> getAll() async {
     List<ToDoItem> res = [];
-    var oldToDoItemList = await _database.db.get(toDoItemsKey) as List;
-    if (oldToDoItemList == null) return res;
-    oldToDoItemList.forEach((value) {
-      Map toDoItemMap = value as Map;
+    var allKeys = await _database.db.findKeys(Finder(filter: Filter.matches("todoitem_", '')));
+    print("all keys: $allKeys");
+    if (allKeys == null) return res;
+
+    for (dynamic key in allKeys) {
+      Map toDoItemMap = await _database.db.get(key as String) as Map;
       ToDoItem toDoItem = new ToDoItem();
       toDoItem.id = toDoItemMap[idKey];
       toDoItem.title = toDoItemMap[titleKey];
@@ -103,12 +82,16 @@ class SembastToDoItemRepository implements ToDoItemRepository {
       toDoItem.color = toDoItemMap[colorKey];
       toDoItem.done = toDoItemMap[doneKey];
       res.add(toDoItem);
-    });
+    }
     return res;
   }
 
   Future removeAll() async {
-    var newListToDoItem = [];
-    await _database.db.update(newListToDoItem, toDoItemsKey);
+    List<ToDoItem> res = [];
+    var allKeys = await _database.db.findKeys(Finder(filter: Filter.matches("todoitem_", '')));
+
+    if (allKeys == null) return res;
+    await _database.db.clear();
+    return res;
   }
 }

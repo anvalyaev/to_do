@@ -11,7 +11,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   cupertino_icons: ^0.1.2
-  sembast: ^1.0.5
+  sembast: ^1.15.1
   uuid: ^2.0.0
   path_provider: ^0.5.0+1
 
