@@ -41,11 +41,11 @@ class SembastToDoItemRepository implements ToDoItemRepository {
     var newListToDoItem;
     if (oldToDoItemList == null) {
       newListToDoItem = [newToDoItem];
-      _database.db.put(newListToDoItem, toDoItemsKey);
+      await _database.db.put(newListToDoItem, toDoItemsKey);
     } else {
       newListToDoItem = oldToDoItemList;
       newListToDoItem.add(newToDoItem);
-      _database.db.update(newListToDoItem, toDoItemsKey);
+      await _database.db.update(newListToDoItem, toDoItemsKey);
     }
   }
 
@@ -66,7 +66,7 @@ class SembastToDoItemRepository implements ToDoItemRepository {
       return toDoItemMap[idKey] == item.id;
     });
     newListToDoItem.removeAt(index);
-    _database.db.update(newListToDoItem, toDoItemsKey);
+    await _database.db.update(newListToDoItem, toDoItemsKey);
   }
 
   Future edit(ToDoItem item) async {
@@ -85,14 +85,15 @@ class SembastToDoItemRepository implements ToDoItemRepository {
       Map toDoItemMap = value as Map;
       return toDoItemMap[idKey] == item.id;
     });
+    if(index == -1) return;
     newListToDoItem.replaceRange(index, index + 1, [toDoItem]);
-    _database.db.update(newListToDoItem, toDoItemsKey);
+    await _database.db.update(newListToDoItem, toDoItemsKey);
   }
 
   Future<List<ToDoItem>> getAll() async {
     List<ToDoItem> res = [];
     var oldToDoItemList = await _database.db.get(toDoItemsKey) as List;
-
+    if (oldToDoItemList == null) return res;
     oldToDoItemList.forEach((value) {
       Map toDoItemMap = value as Map;
       ToDoItem toDoItem = new ToDoItem();
@@ -104,5 +105,10 @@ class SembastToDoItemRepository implements ToDoItemRepository {
       res.add(toDoItem);
     });
     return res;
+  }
+
+  Future removeAll() async {
+    var newListToDoItem = [];
+    await _database.db.update(newListToDoItem, toDoItemsKey);
   }
 }

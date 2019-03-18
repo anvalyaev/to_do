@@ -10,7 +10,21 @@ class ToDoEdit extends StatelessWidget {
     final bloc_presenters.ToDoEdit bloc =
         BlocPresenterProvider.of<bloc_presenters.ToDoEdit>(context);
     return Scaffold(
-        appBar: AppBar(title: Text(Translation.of(context).text("to_do_edit"))),
+        appBar: AppBar(
+          title: Text(Translation.of(context).text("to_do_edit")),
+          actions: <Widget>[
+            StreamBuilder(
+                stream: bloc.itemCount.stream,
+                initialData: bloc.itemCount.value,
+                builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                  return IconButton(
+                      icon: Text("${snapshot.data}"),
+                      onPressed: () {
+                        bloc.changeItemCount.add(100);
+                      });
+                }),
+          ],
+        ),
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.done),
           onPressed: () {
@@ -19,7 +33,7 @@ class ToDoEdit extends StatelessWidget {
         ),
         body: Padding(
           padding: EdgeInsets.all(12),
-          child:Column(
+          child: Column(
             children: <Widget>[
               TextField(
                 controller: bloc.titleController,

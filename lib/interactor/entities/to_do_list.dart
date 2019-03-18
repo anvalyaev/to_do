@@ -10,6 +10,7 @@ abstract class IToDoList extends EntityBase {
   ToDoItem changeItem(String id,
       {String title, String description, int color, bool done});
   ToDoItem removeItem(String id);
+  void removeAll();
 }
 
 class ToDoList extends IToDoList {
@@ -73,5 +74,10 @@ class ToDoList extends IToDoList {
     });
     modelChanged();
     return res;
+  }
+
+  void removeAll(){
+    toDoList.clear();
+    modelChanged();
   }
 }

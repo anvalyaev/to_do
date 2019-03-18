@@ -1,4 +1,10 @@
 {
     "ok": "Ok",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "to_do_list": "To do list",
+    "to_do_edit": "To do edit",
+    "title_helper": "Please, enter name",
+    "description_helper": "Please, enter description",
+    "title": "Title",
+    "description": "Description"
 }

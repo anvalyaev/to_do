@@ -81,7 +81,7 @@ abstract class BlocPresenterBase {
 
 class Output<T> {
   T _value;
-  StreamController<T> _controller = StreamController<T>();
+  StreamController<T> _controller = StreamController<T>.broadcast();
 
   Output.of(BlocPresenterBase bloc_presenter, T initial) {
     value = initial;

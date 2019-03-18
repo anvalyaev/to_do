@@ -11,16 +11,22 @@ class ChangeStatusItemData {
   final bool done;
 }
 
+enum Filter { all, done, todo }
+
 class ToDoList extends BlocPresenterBase {
   Output<List<ToDoItem>> list;
+  Output<Filter> filter;
   Input<String> removeItem;
   Input<ChangeStatusItemData> changeStatusItem;
   Input showCreateItem;
   Input<String> showEditItem;
+  Input deleateAll;
+  Input changeFilter;
 
   @override
   void initiate(BuildContext context) {
     list = Output.of(this, []);
+    filter = Output.of(this, Filter.all);
     removeItem = Input.of(this, handler: (data) {
       execute(actions.RemoveToDoItem(data)).whenComplete(() {
         print('RemoveToDoItem compleated');
@@ -28,7 +34,14 @@ class ToDoList extends BlocPresenterBase {
     });
     changeStatusItem = Input.of(this, handler: (data) {
       execute(actions.EditToDoItem(data.id, done: data.done)).whenComplete(() {
-        print('EditToDoItem compleated');
+        bool done;
+        if (filter.value == Filter.done)
+          done = true;
+        else if (filter.value == Filter.todo) done = false;
+        execute(actions.GetToDoList(done: done))
+            .then((actions.GetToDoList action) {
+          list.value = action.items;
+        });
       });
     });
     showEditItem = Input.of(this, handler: (data) {
@@ -39,7 +52,31 @@ class ToDoList extends BlocPresenterBase {
       Navigator.of(context).pushNamed('/Main/ToDoList/ToDoCreate');
     });
 
-    execute(actions.GetToDoList()).then((actions.GetToDoList action){
+    deleateAll = Input.of(this, handler: (data) {
+      execute(actions.RemoveAllToDoItem()).whenComplete(() {
+        print('RemoveToDoItem compleated');
+      });
+    });
+    changeFilter = Input.of(this, handler: (data) {
+      if (filter.value == Filter.all)
+        filter.value = Filter.done;
+      else if (filter.value == Filter.done)
+        filter.value = Filter.todo;
+      else if (filter.value == Filter.todo) filter.value = Filter.all;
+      bool done;
+      if (filter.value == Filter.done)
+        done = true;
+      else if (filter.value == Filter.todo) done = false;
+      execute(actions.GetToDoList(done: done))
+          .then((actions.GetToDoList action) {
+        list.value = action.items;
+      });
+    });
+    bool done;
+    if (filter.value == Filter.done)
+      done = true;
+    else if (filter.value == Filter.todo) done = false;
+    execute(actions.GetToDoList(done: done)).then((actions.GetToDoList action) {
       list.value = action.items;
     });
     subscribeTo(notifications.ToDoListNotifier(),

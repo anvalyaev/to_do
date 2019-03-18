@@ -7,18 +7,23 @@ class AddToDoItem extends ActionBase {
   final String description;
   final int color;
   final bool done;
+  final int count;
 
-  AddToDoItem({this.title, this.description, this.color, this.done});
+  AddToDoItem(
+      {this.title, this.description, this.color, this.done = false, this.count = 1});
 
   @override
-  void doAction(Accessor accessor, void onCompleate(ActionBase result)) {
+  void doAction(Accessor accessor, void onCompleate(ActionBase result)) async {
     IDatabase storage = accessor.database;
     IToDoList toDoList = accessor.toDoList;
 
-    ToDoItem item = toDoList.addItem(
-        title: title, description: description, color: color, done: done);
-    var repo = SembastToDoItemRepository(storage);
-    repo.add(item);
+    for (int i = 0; i < count; ++i) {
+      ToDoItem item = toDoList.addItem(
+          title: title, description: description, color: color, done: done);
+      var repo = SembastToDoItemRepository(storage);
+      await repo.add(item);
+    }
+
     onCompleate(this);
   }
 }
@@ -34,13 +39,16 @@ class EditToDoItem extends ActionBase {
       {this.title, this.description, this.color, this.done});
 
   @override
-  void doAction(Accessor accessor, void onCompleate(ActionBase result)) {
+  void doAction(Accessor accessor, void onCompleate(ActionBase result)) async {
     IDatabase storage = accessor.database;
     IToDoList toDoList = accessor.toDoList;
     ToDoItem item = toDoList.changeItem(itemId,
         title: title, description: description, color: color, done: done);
     var repo = SembastToDoItemRepository(storage);
-    repo.edit(item);
+    await repo.edit(item);
+    // for (int i = 0; i < 100000; ++i) {
+    //   print("$runtimeType : $i");
+    // }
     onCompleate(this);
   }
 }
@@ -50,12 +58,26 @@ class RemoveToDoItem extends ActionBase {
   RemoveToDoItem(this.itemId);
 
   @override
-  void doAction(Accessor accessor, void onCompleate(ActionBase result)) {
+  void doAction(Accessor accessor, void onCompleate(ActionBase result)) async {
     IDatabase storage = accessor.database;
     IToDoList toDoList = accessor.toDoList;
     ToDoItem item = toDoList.removeItem(itemId);
     var repo = SembastToDoItemRepository(storage);
-    repo.remove(item);
+    await repo.remove(item);
+    onCompleate(this);
+  }
+}
+
+class RemoveAllToDoItem extends ActionBase {
+  RemoveAllToDoItem();
+
+  @override
+  void doAction(Accessor accessor, void onCompleate(ActionBase result)) async {
+    IDatabase storage = accessor.database;
+    IToDoList toDoList = accessor.toDoList;
+    toDoList.removeAll();
+    var repo = SembastToDoItemRepository(storage);
+    await repo.removeAll();
     onCompleate(this);
   }
 }
@@ -68,7 +90,7 @@ class GetToDoItem extends ActionBase {
   @override
   void doAction(Accessor accessor, void onCompleate(ActionBase result)) {
     IToDoList toDoList = accessor.toDoList;
-    item = toDoList.toDoList.firstWhere((ToDoItem currentItem){
+    item = toDoList.toDoList.firstWhere((ToDoItem currentItem) {
       return currentItem.id == itemId;
     });
     onCompleate(this);
@@ -76,13 +98,25 @@ class GetToDoItem extends ActionBase {
 }
 
 class GetToDoList extends ActionBase {
-  List<ToDoItem> items;
+  final bool done;
+  List<ToDoItem> items = [];
 
-  GetToDoList();
+  GetToDoList({this.done});
   @override
   void doAction(Accessor accessor, void onCompleate(ActionBase result)) {
+    if(done == null){
     IToDoList toDoList = accessor.toDoList;
     items = toDoList.toDoList;
     onCompleate(this);
+    return;
+    } else {
+      for(ToDoItem item in accessor.toDoList.toDoList){
+        if(item.done == done){
+          items.add(item);
+        }
+      }
+      onCompleate(this);
+      return;
+    }
   }
 }

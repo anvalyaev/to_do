@@ -9,9 +9,11 @@ import '../interactor/data_stores/database/repositories/to_do_item.dart';
 class ToDoEdit extends BlocPresenterBase {
   String toDoItemId;
   Output<int> color;
+  Output<int> itemCount;
   Output<bool> busy;
   Input<int> setColor;
   Input saveItem;
+  Input<int> changeItemCount;
 
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -45,8 +47,13 @@ class ToDoEdit extends BlocPresenterBase {
   void initiate(BuildContext context) {
     color = Output.of(this, 0xFFFFFFFF);
     busy = Output.of(this, false);
+    itemCount = Output.of(this, 1);
     setColor = Input.of(this, handler: (data) {
       color.value = data;
+    });
+
+    changeItemCount =Input.of(this, handler: (data){
+      itemCount.value = itemCount.value + data;
     });
     saveItem = Input.of(this, handler: (data) {
       if (busy.value) return;
@@ -55,21 +62,22 @@ class ToDoEdit extends BlocPresenterBase {
         execute(actions.AddToDoItem(
                 title: titleController.text,
                 description: descriptionController.text,
-                color: color.value))
+                color: color.value,
+                count: itemCount.value))
             .whenComplete(() {
           busy.value = false;
-          Navigator.of(data).pop();
+          
         });
       } else {
         execute(actions.EditToDoItem(toDoItemId,
                 title: titleController.text,
                 description: descriptionController.text,
-                color: color.value))
+                color: color.value,))
             .whenComplete(() {
           busy.value = false;
-          Navigator.of(data).pop();
         });
       }
+      Navigator.of(context).pop();
     });
     if (toDoItemId != null) {
       busy.value = true;
