@@ -4,6 +4,7 @@ import '../interactor/actions/to_do.dart' as actions;
 import '../interactor/notifications/to_do_list_notifier.dart' as notifications;
 import '../interactor/notifications/notification_base.dart';
 import '../interactor/data_stores/database/repositories/to_do_item.dart';
+import '../interactor/entities/to_do_list.dart' as to_do_list;
 
 class ChangeStatusItemData {
   ChangeStatusItemData(this.id, this.done);
@@ -83,7 +84,38 @@ class ToDoList extends BlocPresenterBase {
         (NotificationBase notification) {
       notifications.ToDoListNotifier notificationRes =
           notification as notifications.ToDoListNotifier;
-      list.value = notificationRes.data;
+      to_do_list.LastChange change = notificationRes.data;
+      List<ToDoItem> itemList = list.value;
+      print("Event: ${change.event}, delta: ${change.delta}");
+      switch (change.event) {
+        case to_do_list.Event.add_item:
+          itemList.add(change.delta);
+          break;
+        case to_do_list.Event.change_item:
+          int index = itemList.indexWhere((ToDoItem currentItem) {
+            return currentItem.id == change.delta.id;
+          });
+          var res = itemList.elementAt(index);
+          itemList.replaceRange(index, index + 1, [res]);
+          break;
+        case to_do_list.Event.remove_all:
+          itemList.clear();
+          break;
+        case to_do_list.Event.remove_item:
+          itemList.removeWhere((ToDoItem currentItem) {
+            bool val = (currentItem.id == change.delta.id);
+            return val;
+          });
+          break;
+        case to_do_list.Event.reset:
+          execute(actions.GetToDoList(done: done))
+              .then((actions.GetToDoList action) {
+            list.value = action.items;
+          });
+          break;
+        default:
+      }
+      list.value = itemList;
     });
   }
 }
