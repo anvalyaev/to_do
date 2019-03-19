@@ -15,6 +15,7 @@ abstract class ToDoItemRepository {
   Future remove(ToDoItem item);
   Future edit(ToDoItem item);
   Future<List<ToDoItem>> getAll();
+  Future removeAll();
 }
 
 final String toDoItemsKey = 'to_do_items';
@@ -69,7 +70,7 @@ class SembastToDoItemRepository implements ToDoItemRepository {
 
   Future<List<ToDoItem>> getAll() async {
     List<ToDoItem> res = [];
-    var allKeys = await _database.db.findKeys(Finder(filter: Filter.matches("todoitem_", '')));
+    var allKeys = await _database.db.findKeys(Finder(filter: Filter.matches(idKey, "todoitem_")));
     print("all keys: $allKeys");
     if (allKeys == null) return res;
 

@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'package:gate/gate.dart';
 import 'entities/index.dart' as entities;
 import 'data_stores/index.dart' as data_stores;
+
 import 'actions/action_base.dart';
 import 'notifications/notification_base.dart';
 export 'data_stores/index.dart';
@@ -40,12 +41,15 @@ class Accessor extends Worker {
 
   entities.IToDoList get toDoList {
     if (_toDoList == null) {
-      _toDoList = new entities.ToDoList(_controller, database);
+      _toDoList = new entities.ToDoList(_controller);
     }
     return _toDoList;
   }
-  void initialize() {
-    toDoList.initialize();
+  void initialize() async {
+    data_stores.SembastToDoItemRepository repo = new data_stores.SembastToDoItemRepository(_database);
+    List<data_stores.ToDoItem> list = await repo.getAll();
+    toDoList.reset(items: list);
+
   }
 
   onNewMessage(dynamic data) {

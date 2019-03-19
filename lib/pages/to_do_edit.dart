@@ -36,6 +36,7 @@ class ToDoEdit extends StatelessWidget {
           child: Column(
             children: <Widget>[
               TextField(
+                autofocus: true,
                 controller: bloc.titleController,
                 decoration: InputDecoration(
                   border: InputBorder.none,
@@ -46,6 +47,7 @@ class ToDoEdit extends StatelessWidget {
               Divider(height: 5),
               Expanded(
                 child: TextFormField(
+                  autofocus: true,
                   controller: bloc.descriptionController,
                   maxLines: 100,
                   decoration: InputDecoration(
