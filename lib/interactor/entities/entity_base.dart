@@ -9,8 +9,4 @@ abstract class EntityBase {
   void modelChanged() {
     _controller.sink.add(this);
   }
-  
-  void initialize();
-  void reload();
-
 }
