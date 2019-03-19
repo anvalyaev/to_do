@@ -96,3 +96,32 @@ class SembastToDoItemRepository implements ToDoItemRepository {
     return res;
   }
 }
+
+class ToDoItemDummy implements ToDoItemRepository {
+  Future add(ToDoItem item){
+    return Future.delayed(Duration(milliseconds: 50), (){
+      return;
+    });
+  }
+  Future remove(ToDoItem item){
+    return Future.delayed(Duration(milliseconds: 50), (){
+      return;
+    });
+  }
+  Future edit(ToDoItem item){
+    return Future.delayed(Duration(milliseconds: 50), (){
+      return;
+    });
+  }
+  Future<List<ToDoItem>> getAll(){
+    return Future<List<ToDoItem>>.delayed(Duration(milliseconds: 100), (){
+      List<ToDoItem> res = [ToDoItem(), ToDoItem(), ToDoItem(), ToDoItem()];
+      return res;
+    });
+  }
+  Future removeAll(){
+    return Future.delayed(Duration(milliseconds: 50), (){
+      return;
+    });
+  }
+}

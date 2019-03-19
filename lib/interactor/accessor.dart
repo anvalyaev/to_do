@@ -9,7 +9,18 @@ import 'notifications/notification_base.dart';
 export 'data_stores/index.dart';
 export 'entities/index.dart';
 
-class Accessor extends Worker {
+abstract class IAccessor {
+  data_stores.IDatabase get database;
+  entities.IAccount get account;
+  entities.IToDoList get toDoList;
+
+  void initialize();
+
+  // void _runAction(ActionBase action);
+  // void _testNotification(NotificationBase notification, entities.EntityBase entity);
+}
+
+class Accessor extends Worker implements IAccessor {
   data_stores.IDatabase _database;
   entities.IAccount _account;
   entities.IToDoList _toDoList;
@@ -45,11 +56,12 @@ class Accessor extends Worker {
     }
     return _toDoList;
   }
+
   void initialize() async {
-    data_stores.SembastToDoItemRepository repo = new data_stores.SembastToDoItemRepository(_database);
+    data_stores.SembastToDoItemRepository repo =
+        new data_stores.SembastToDoItemRepository(_database);
     List<data_stores.ToDoItem> list = await repo.getAll();
     toDoList.reset(items: list);
-
   }
 
   onNewMessage(dynamic data) {
@@ -59,9 +71,7 @@ class Accessor extends Worker {
       _testNotificationOnActiveModels(data);
     } else if (data is ActionBase) {
       ActionBase action = data;
-      action.doAction(this, (ActionBase result) {
-        send(result);
-      });
+      _runAction(action);
     } else if (data is int) {
       int notificationId = data;
       _notifications.removeWhere((item) {
@@ -84,6 +94,12 @@ class Accessor extends Worker {
       notification.grabData(entity);
       send(notification);
     }
+  }
+
+  void _runAction(ActionBase action){
+          action.doAction(this, (ActionBase result) {
+        send(result);
+      }); 
   }
 
   void _testNotificationOnActiveModels(NotificationBase notification) {
