@@ -13,7 +13,7 @@ class AddToDoItem extends ActionBase {
       {this.title, this.description, this.color, this.done = false, this.count = 1});
 
   @override
-  void doAction(Accessor accessor, void onCompleate(ActionBase result)) async {
+  void doAction(IAccessor accessor, void onCompleate(ActionBase result)) async {
     IDatabase storage = accessor.database;
     IToDoList toDoList = accessor.toDoList;
 
@@ -39,7 +39,7 @@ class EditToDoItem extends ActionBase {
       {this.title, this.description, this.color, this.done});
 
   @override
-  void doAction(Accessor accessor, void onCompleate(ActionBase result)) async {
+  void doAction(IAccessor accessor, void onCompleate(ActionBase result)) async {
     IDatabase storage = accessor.database;
     IToDoList toDoList = accessor.toDoList;
     ToDoItem item = toDoList.changeItem(itemId,
@@ -58,7 +58,7 @@ class RemoveToDoItem extends ActionBase {
   RemoveToDoItem(this.itemId);
 
   @override
-  void doAction(Accessor accessor, void onCompleate(ActionBase result)) async {
+  void doAction(IAccessor accessor, void onCompleate(ActionBase result)) async {
     IDatabase storage = accessor.database;
     IToDoList toDoList = accessor.toDoList;
     ToDoItem item = toDoList.removeItem(itemId);
@@ -72,7 +72,7 @@ class RemoveAllToDoItem extends ActionBase {
   RemoveAllToDoItem();
 
   @override
-  void doAction(Accessor accessor, void onCompleate(ActionBase result)) async {
+  void doAction(IAccessor accessor, void onCompleate(ActionBase result)) async {
     IDatabase storage = accessor.database;
     IToDoList toDoList = accessor.toDoList;
     toDoList.removeAll();
@@ -88,7 +88,7 @@ class GetToDoItem extends ActionBase {
 
   GetToDoItem(this.itemId);
   @override
-  void doAction(Accessor accessor, void onCompleate(ActionBase result)) {
+  void doAction(IAccessor accessor, void onCompleate(ActionBase result)) {
     IToDoList toDoList = accessor.toDoList;
     item = toDoList.toDoList.firstWhere((ToDoItem currentItem) {
       return currentItem.id == itemId;
@@ -103,7 +103,7 @@ class GetToDoList extends ActionBase {
 
   GetToDoList({this.done});
   @override
-  void doAction(Accessor accessor, void onCompleate(ActionBase result)) {
+  void doAction(IAccessor accessor, void onCompleate(ActionBase result)) {
     if(done == null){
     IToDoList toDoList = accessor.toDoList;
     items = toDoList.toDoList;

@@ -7,7 +7,7 @@ abstract class ActionBase{
     ++counter;
   }
 
-  void doAction(Accessor accessor, void onComplete(ActionBase result));
+  void doAction(IAccessor accessor, void onComplete(ActionBase result));
   int get id => _id;
   int _id;
   static int counter = 0;
