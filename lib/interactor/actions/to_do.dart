@@ -3,6 +3,7 @@ import '../accessor.dart';
 import '../data_stores/database/repositories/to_do_item.dart';
 
 class AddToDoItem extends ActionBase {
+  ToDoItem item;
   final String title;
   final String description;
   final int color;
@@ -18,10 +19,9 @@ class AddToDoItem extends ActionBase {
     IToDoList toDoList = accessor.toDoList;
 
     for (int i = 0; i < count; ++i) {
-      ToDoItem item = toDoList.addItem(
+      item = toDoList.addItem(
           title: title, description: description, color: color, done: done);
-      var repo = SembastToDoItemRepository(storage);
-      await repo.add(item);
+      await storage.toDoItemRepository.add(item);
     }
 
     onCompleate(this);
@@ -29,6 +29,7 @@ class AddToDoItem extends ActionBase {
 }
 
 class EditToDoItem extends ActionBase {
+  ToDoItem item;
   final String itemId;
   final String title;
   final String description;
@@ -42,13 +43,9 @@ class EditToDoItem extends ActionBase {
   void doAction(IAccessor accessor, void onCompleate(ActionBase result)) async {
     IDatabase storage = accessor.database;
     IToDoList toDoList = accessor.toDoList;
-    ToDoItem item = toDoList.changeItem(itemId,
+    item = toDoList.changeItem(itemId,
         title: title, description: description, color: color, done: done);
-    var repo = SembastToDoItemRepository(storage);
-    await repo.edit(item);
-    // for (int i = 0; i < 100000; ++i) {
-    //   print("$runtimeType : $i");
-    // }
+    await storage.toDoItemRepository.edit(item);
     onCompleate(this);
   }
 }
@@ -62,8 +59,7 @@ class RemoveToDoItem extends ActionBase {
     IDatabase storage = accessor.database;
     IToDoList toDoList = accessor.toDoList;
     ToDoItem item = toDoList.removeItem(itemId);
-    var repo = SembastToDoItemRepository(storage);
-    await repo.remove(item);
+    await storage.toDoItemRepository.remove(item);
     onCompleate(this);
   }
 }
@@ -76,8 +72,7 @@ class RemoveAllToDoItem extends ActionBase {
     IDatabase storage = accessor.database;
     IToDoList toDoList = accessor.toDoList;
     toDoList.removeAll();
-    var repo = SembastToDoItemRepository(storage);
-    await repo.removeAll();
+    await storage.toDoItemRepository.removeAll();
     onCompleate(this);
   }
 }

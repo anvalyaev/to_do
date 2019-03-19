@@ -16,8 +16,8 @@ abstract class IAccessor {
 
   void initialize();
 
-  void _runAction(ActionBase action);
-  void _testNotification(NotificationBase notification, entities.EntityBase entity);
+  // void _runAction(ActionBase action);
+  // void _testNotification(NotificationBase notification, entities.EntityBase entity);
 }
 
 class Accessor extends Worker implements IAccessor {
