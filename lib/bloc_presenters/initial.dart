@@ -10,7 +10,6 @@ class Initial extends BlocPresenterBase {
     print("void initiate(BuildContext context)");
     getApplicationDocumentsDirectory().then((Directory dir){
       execute<actions.InitialStorage>(actions.InitialStorage(dir.path)).whenComplete((){
-        print("Navigator.of(context).pushNamed('/Main/ToDoList');");
         Navigator.of(context).pushReplacementNamed('/Main/ToDoList');
       });
     });

@@ -7,23 +7,22 @@ class ToDoListNotifier extends NotificationBase {
   final bool done;
   ToDoListNotifier({this.done});
   bool whenNotify(EntityBase entity) {
-    return entity is IToDoList;
+    bool res = true;
+    if(!(entity is IToDoList)) res = false;
+
+    if(done != null){
+      IToDoList toDoList = entity;
+      if(toDoList.lastChange.delta != null){
+        res = (toDoList.lastChange.delta.done == done);
+      }
+    }
+    return res;
+
   }
 
   void grabData(EntityBase entity) {
     if (!(entity is IToDoList)) return;
     IToDoList toDoList = entity;
-    if (done == null) {
-      data = toDoList.toDoList;
-    } else {
-      List<ToDoItem> filteredList = [];
-
-      for (ToDoItem item in toDoList.toDoList) {
-        if (item.done = done) {
-          filteredList.add(item);
-        }
-      }
-      data = filteredList;
-    }
+    data = toDoList.lastChange;
   }
 }

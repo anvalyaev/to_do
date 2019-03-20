@@ -55,10 +55,11 @@ class AccessorController extends Controller {
     return _interator;
   }
   void onNewMessage(dynamic data) {
-    print("New message from interactor: $data");
     if (data is NotificationBase) {
+      print("New message from interactor: $data, ${data.id}");
       _controller.sink.add(data);
     } else if (data is ActionBase) {
+      print("New message from interactor: $data, ${data.id}");
       _actionController.sink.add(data);
     }
   }

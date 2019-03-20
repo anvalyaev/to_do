@@ -20,6 +20,8 @@ class _ApplicationState extends State<Application> {
     apptranslator.onLocaleChanged = onLocaleChange;
   }
 
+  Map<String, Widget> _routesCache = {};
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -37,44 +39,70 @@ class _ApplicationState extends State<Application> {
       home: BlocPresenterProvider<bloc_presenters.Initial>(
         child: pages.Initial(),
         bloc: bloc_presenters.Initial(),
+        route: "",
+        onDispose: (String routeName) {},
       ),
       onGenerateRoute: (RouteSettings settings) =>
           MaterialPageRoute(builder: (BuildContext context) {
+            print("ROUTE: ${settings.name}");
+
+            Widget res = _routesCache[settings.name];
+            if ((res != null)) {
+              return res;
+            }
             switch (settings.name) {
               case '/Authorization':
-                return pages.Authorization();
+                res = pages.Authorization();
                 break;
               case '/Main':
-                return pages.Main();
+                res = pages.Main();
                 break;
               case '/Initial':
-                return BlocPresenterProvider<bloc_presenters.Initial>(
+                res = BlocPresenterProvider<bloc_presenters.Initial>(
                   child: pages.Initial(),
                   bloc: bloc_presenters.Initial(),
+                  route: settings.name,
+                  onDispose: (String routeName) {
+                    _routesCache.remove(routeName);
+                  },
                 );
                 break;
               case '/Main/ToDoList':
-                return BlocPresenterProvider<bloc_presenters.ToDoList>(
+                res = BlocPresenterProvider<bloc_presenters.ToDoList>(
                   child: pages.ToDoList(),
                   bloc: bloc_presenters.ToDoList(),
+                  route: settings.name,
+                  onDispose: (String routeName) {
+                    _routesCache.remove(routeName);
+                  },
                 );
                 break;
               case '/Main/ToDoList/ToDoEdit':
-                return BlocPresenterProvider<bloc_presenters.ToDoEdit>(
+                res = BlocPresenterProvider<bloc_presenters.ToDoEdit>(
                   child: pages.ToDoEdit(),
                   bloc: bloc_presenters.ToDoEdit.edit(settings.arguments),
+                  route: settings.name,
+                  onDispose: (String routeName) {
+                    _routesCache.remove(routeName);
+                  },
                 );
                 break;
               case '/Main/ToDoList/ToDoCreate':
-                return BlocPresenterProvider<bloc_presenters.ToDoEdit>(
+                res = BlocPresenterProvider<bloc_presenters.ToDoEdit>(
                   child: pages.ToDoEdit(),
                   bloc: bloc_presenters.ToDoEdit(),
+                  route: settings.name,
+                  onDispose: (String routeName) {
+                    _routesCache.remove(routeName);
+                  },
                 );
                 break;
               default:
-                return pages.Dummy(settings.name);
+                return res = pages.Dummy(settings.name);
                 break;
             }
+            _routesCache[settings.name] = res;
+            return res;
           }),
     );
   }

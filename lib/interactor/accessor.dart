@@ -24,7 +24,6 @@ class Accessor extends Worker implements IAccessor {
   data_stores.IDatabase _database;
   entities.IAccount _account;
   entities.IToDoList _toDoList;
-  List<entities.EntityBase> _activeModels = [];
   List<NotificationBase> _notifications = [];
   StreamController<entities.EntityBase> _controller =
       StreamController<entities.EntityBase>.broadcast(onListen: () {
@@ -68,7 +67,7 @@ class Accessor extends Worker implements IAccessor {
     print("New message from controller: $data");
     if (data is NotificationBase) {
       _notifications.add(data);
-      _testNotificationOnActiveModels(data);
+      // _testNotificationOnActiveModels(data);
     } else if (data is ActionBase) {
       ActionBase action = data;
       _runAction(action);
@@ -102,10 +101,10 @@ class Accessor extends Worker implements IAccessor {
       }); 
   }
 
-  void _testNotificationOnActiveModels(NotificationBase notification) {
-    if (_activeModels.isEmpty) return;
-    for (entities.EntityBase entity in _activeModels) {
-      _testNotification(notification, entity);
-    }
-  }
+  // void _testNotificationOnActiveModels(NotificationBase notification) {
+  //   if (_activeModels.isEmpty) return;
+  //   for (entities.EntityBase entity in _activeModels) {
+  //     _testNotification(notification, entity);
+  //   }
+  // }
 }
