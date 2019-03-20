@@ -65,7 +65,7 @@ class ToDoEdit extends BlocPresenterBase {
                 color: color.value,
                 count: itemCount.value))
             .whenComplete(() {
-          busy.value = false;
+          // busy.value = false;
           
         });
       } else {
@@ -74,7 +74,7 @@ class ToDoEdit extends BlocPresenterBase {
                 description: descriptionController.text,
                 color: color.value,))
             .whenComplete(() {
-          busy.value = false;
+          // busy.value = false;
         });
       }
       Navigator.of(context).pop();

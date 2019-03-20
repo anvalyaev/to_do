@@ -96,7 +96,7 @@ class ToDoList extends BlocPresenterBase {
             return currentItem.id == change.delta.id;
           });
           var res = itemList.elementAt(index);
-          itemList.replaceRange(index, index + 1, [res]);
+          itemList.replaceRange(index, index + 1, [change.delta]);
           break;
         case to_do_list.Event.remove_all:
           itemList.clear();
