@@ -31,8 +31,8 @@ class ToDoList extends StatelessWidget {
         actions: <Widget>[
                     Center(
               child: StreamBuilder(
-            stream: bloc.list.stream,
-            initialData: bloc.list.value,
+            // stream: bloc.list.stream,
+            // initialData: bloc.list.value,
             builder:
                 (BuildContext context, AsyncSnapshot<List<ToDoItem>> snapshot) {
               return Text("${snapshot.data.length}");
@@ -41,17 +41,17 @@ class ToDoList extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-              bloc.deleateAll.add(null);
+              // bloc.deleateAll.add(null);
             },
           ),
           StreamBuilder(
-            stream: bloc.filter.stream,
-            initialData: bloc.filter.value,
+            // stream: bloc.filter.stream,
+            // initialData: bloc.filter.value,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               return IconButton(
                 icon: iconForFilter(snapshot.data),
                 onPressed: () {
-                  bloc.changeFilter.add(null);
+                  // bloc.changeFilter.add(null);
                 },
               );
             },
@@ -60,8 +60,8 @@ class ToDoList extends StatelessWidget {
         title: Text(Translation.of(context).text("to_do_list")),
       ),
       body: StreamBuilder(
-          stream: bloc.list.stream,
-          initialData: bloc.list.value,
+          // stream: bloc.list.stream,
+          // initialData: bloc.list.value,
           builder:
               (BuildContext context, AsyncSnapshot<List<ToDoItem>> snapshot) {
             if (snapshot.hasData) {
@@ -71,7 +71,7 @@ class ToDoList extends StatelessWidget {
                   return Dismissible(
                       key: Key(snapshot.data[index].id),
                       onDismissed: (direction) {
-                        bloc.removeItem.add(snapshot.data[index].id);
+                        // bloc.removeItem.add(snapshot.data[index].id);
                       },
                       child: Card(
                         child: ListTile(
@@ -80,15 +80,15 @@ class ToDoList extends StatelessWidget {
                           trailing: IconButton(
                             icon: Icon(Icons.edit),
                             onPressed: () {
-                              bloc.showEditItem.add(snapshot.data[index].id);
+                              // bloc.showEditItem.add(snapshot.data[index].id);
                             },
                           ),
                           leading: Checkbox(
                             value: snapshot.data[index].done,
                             onChanged: (bool val) {
-                              bloc.changeStatusItem.add(
-                                  bloc_presenters.ChangeStatusItemData(
-                                      snapshot.data[index].id, val));
+                              // bloc.changeStatusItem.add(
+                              //     bloc_presenters.ChangeStatusItemData(
+                              //         snapshot.data[index].id, val));
                             },
                           ),
                         ),
@@ -101,7 +101,7 @@ class ToDoList extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          bloc.showCreateItem.add(context);
+          // bloc.showCreateItem.add(context);
         },
       ),
     );

@@ -8,12 +8,20 @@ import '../interactor/data_stores/database/repositories/to_do_item.dart';
 
 class ToDoEdit extends BlocPresenterBase {
   String toDoItemId;
-  Output<int> color;
-  Output<int> itemCount;
-  Output<bool> busy;
-  Input<int> setColor;
-  Input saveItem;
-  Input<int> changeItemCount;
+  // Output<int> color;
+  // Output<int> itemCount;
+  // Output<bool> busy;
+  // Input<int> setColor;
+  // Input saveItem;
+  // Input<int> changeItemCount;
+
+  // class Event{}
+
+  // class CreateNewTodo extends Event {
+  //   final String text;
+  // }
+
+  // Sink<Event> _events;
 
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -41,54 +49,65 @@ class ToDoEdit extends BlocPresenterBase {
     Color(0xFF881111),
   ];
 
+  // class Wireframe {
+  //    final BuildContext _context;
+
+  //    AppNavigation(this._context);
+
+  //    void pop() {}
+  //    void gotoMain() {}
+  //    void gotoTodoList() {}
+
+  // }
+
   ToDoEdit();
   ToDoEdit.edit(this.toDoItemId);
   @override
   void initiate(BuildContext context) {
-    color = Output.of(this, 0xFFFFFFFF);
-    busy = Output.of(this, false);
-    itemCount = Output.of(this, 1);
-    setColor = Input.of(this, handler: (data) {
-      color.value = data;
-    });
+    // color = Output.of(this, 0xFFFFFFFF);
+    // busy = Output.of(this, false);
+    // itemCount = Output.of(this, 1);
+    // setColor = Input.of(this, handler: (data) {
+    //   color.value = data;
+    // });
 
-    changeItemCount =Input.of(this, handler: (data){
-      itemCount.value = itemCount.value + data;
-    });
-    saveItem = Input.of(this, handler: (data) {
-      if (busy.value) return;
-      busy.value = true;
-      if (toDoItemId == null) {
-        execute(actions.AddToDoItem(
-                title: titleController.text,
-                description: descriptionController.text,
-                color: color.value,
-                count: itemCount.value))
-            .whenComplete(() {
-          // busy.value = false;
+    // changeItemCount =Input.of(this, handler: (data){
+    //   itemCount.value = itemCount.value + data;
+    // });
+    // saveItem = Input.of(this, handler: (data) {
+    //   if (busy.value) return;
+    //   busy.value = true;
+    //   if (toDoItemId == null) {
+    //     execute(actions.AddToDoItem(
+    //             title: titleController.text,
+    //             description: descriptionController.text,
+    //             color: color.value,
+    //             count: itemCount.value))
+    //         .whenComplete(() {
+    //       // busy.value = false;
           
-        });
-      } else {
-        execute(actions.EditToDoItem(toDoItemId,
-                title: titleController.text,
-                description: descriptionController.text,
-                color: color.value,))
-            .whenComplete(() {
-          // busy.value = false;
-        });
-      }
-      Navigator.of(context).pop();
-    });
-    if (toDoItemId != null) {
-      busy.value = true;
-      execute(actions.GetToDoItem(toDoItemId))
-          .then((actions.ActionBase actionBase) {
-        var action = actionBase as actions.GetToDoItem;
-        titleController.text = action.item.title;
-        descriptionController.text = action.item.description;
-        color.value = action.item.color;
-        busy.value = false;
-      });
-    }
+    //     });
+    //   } else {
+    //     execute(actions.EditToDoItem(toDoItemId,
+    //             title: titleController.text,
+    //             description: descriptionController.text,
+    //             color: color.value,))
+    //         .whenComplete(() {
+    //       // busy.value = false;
+    //     });
+    //   }
+    //   Navigator.of(context).pop();
+    // });
+    // if (toDoItemId != null) {
+    //   busy.value = true;
+    //   execute(actions.GetToDoItem(toDoItemId))
+    //       .then((actions.ActionBase actionBase) {
+    //     var action = actionBase as actions.GetToDoItem;
+    //     titleController.text = action.item.title;
+    //     descriptionController.text = action.item.description;
+    //     color.value = action.item.color;
+    //     busy.value = false;
+    //   });
+    // }
   }
 }

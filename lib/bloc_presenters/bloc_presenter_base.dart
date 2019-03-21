@@ -4,24 +4,48 @@ import '../interactor/accessor_controller.dart';
 import '../interactor/actions/action_base.dart';
 import '../interactor/notifications/notification_base.dart';
 
-abstract class BlocPresenterBase {
+abstract class StreamConstructor<T, B extends BlocPresenterBase> {
+  B bloc;
+  Stream<T> stream;
+  T current;
+  StreamConstructor(this.bloc){
+    stream = _constructStream();
+  }
+  Stream<T> _constructStream();
+}
+
+abstract class BaseBlocEvent {
+  BaseBlocEvent(this.isUserEvent);
+  final bool isUserEvent;
+}
+
+abstract class BlocPresenterBase<T extends BaseBlocEvent> {
   AccessorController _controller = new AccessorController();
+
   List<StreamSubscription> _subscriptions = [];
+  StreamController<T> _eventsStreamController = StreamController.broadcast();
+  StreamSink get events => _eventsStreamController.sink;
+  Stream<T> get streamEvents => _eventsStreamController.stream;
+
   Set<int> _myNotifications = {};
   Set<int> _myActions = {};
-  Set<Output> _properties = new Set<Output>();
-  Set<Input> _inputs = new Set<Input>();
   bool initiated = false;
 
   BlocPresenterBase() {
     print("New bloc presenter: $runtimeType");
   }
-  void doInitiate(BuildContext context){
-    if(initiated) return;
+  void doInitiate(BuildContext context) {
+    if (initiated) return;
     initiate(context);
     initiated = true;
   }
+
   void initiate(BuildContext context);
+  void addUserInputHandler<E extends T>(void handler(E event)) {
+    streamEvents
+        .where((event) => (event is E) && (event.isUserEvent))
+        .listen(handler);
+  }
 
   Future<T> execute<T extends ActionBase>(T action) async {
     T actionRes;
@@ -55,7 +79,6 @@ abstract class BlocPresenterBase {
   }
 
   void dispose() {
-
     print("Dispose bloc presenter: $runtimeType");
     for (StreamSubscription subscription in _subscriptions) {
       subscription.cancel();
@@ -65,52 +88,9 @@ abstract class BlocPresenterBase {
     for (int notificationId in _myNotifications) {
       _controller.removeNotification(notificationId);
     }
+    _eventsStreamController.close();
     _myNotifications.clear();
-
-    for (Output property in _properties) {
-      property.dispose();
-    }
-
-    for (Input input in _inputs) {
-      input.dispose();
-    }
     _myNotifications.clear();
     initiated = false;
-  }
-}
-
-class Output<T> {
-  T _value;
-  StreamController<T> _controller = StreamController<T>.broadcast();
-
-  Output.of(BlocPresenterBase bloc_presenter, T initial) {
-    value = initial;
-    bloc_presenter._properties.add(this);
-  }
-  set value(T v) {
-    _value = v;
-    _controller.sink.add(_value);
-  }
-
-  T get value => _value;
-  Stream<T> get stream => _controller.stream;
-  void dispose() {
-    _controller.close();
-  }
-}
-
-class Input<T> {
-  StreamController<T> _controller = StreamController<T>();
-  Input.of(BlocPresenterBase bloc_presenter, {void handler(T data)}) {
-    if (handler != null) addHandler(handler);
-    bloc_presenter._inputs.add(this);
-  }
-  void addHandler(void handler(T data)) {
-    _controller.stream.listen(handler);
-  }
-
-  void add(T data) => _controller.sink.add(data);
-  void dispose() {
-    _controller.close();
   }
 }

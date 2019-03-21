@@ -9,8 +9,8 @@ class BlocPresenterProvider<T extends BlocPresenterBase>
     Key key,
     @required this.child,
     @required this.bloc,
-    @required this.route,
-    @required this.onDispose,
+    this.route,
+    this.onDispose,
   }) : super(key: key);
 
   final T bloc;
@@ -18,7 +18,8 @@ class BlocPresenterProvider<T extends BlocPresenterBase>
   final String route;
   final Function onDispose;
   @override
-  _BlocProviderState<T> createState() => _BlocProviderState<T>(route, onDispose);
+  _BlocProviderState<T> createState() =>
+      _BlocProviderState<T>(route, onDispose);
 
   static T of<T extends BlocPresenterBase>(BuildContext context) {
     final type = _typeOf<BlocPresenterProvider<T>>();
@@ -39,7 +40,9 @@ class _BlocProviderState<T>
   void dispose() {
     widget.bloc.dispose();
     super.dispose();
-    onDispose(route);
+    if ((route != null) && (onDispose != null)) {
+      onDispose(route);
+    }
   }
 
   @override

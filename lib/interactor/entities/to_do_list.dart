@@ -24,7 +24,6 @@ void reset({List<ToDoItem> items});
 
 class ToDoList extends IToDoList {
   List<ToDoItem> _toDoList = [];
-  SembastDataBase _database;
   LastChange _lastChange = LastChange();
 
   ToDoList(StreamController<EntityBase> controller)

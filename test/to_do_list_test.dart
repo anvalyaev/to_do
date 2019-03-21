@@ -90,6 +90,13 @@ void main() {
 
     test('Фильтр невыполненных задач отбирает только невыполненные задачи',
         () async {
+          final tofoBloc = TodoBloc();
+          todoBloc.events.add(NewTodo("", Uncompleted))
+          todoBloc.events.add(NewTodo("", Completed))
+          todoBloc.countUncompleted.listen((e) {
+            e shouldBe 1
+          })
+
       actions.AddToDoItem result1 =
           await accessor.runAction(actions.AddToDoItem(done: true));
       actions.AddToDoItem result2 =

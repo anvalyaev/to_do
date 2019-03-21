@@ -14,13 +14,13 @@ class ToDoEdit extends StatelessWidget {
           title: Text(Translation.of(context).text("to_do_edit")),
           actions: <Widget>[
             StreamBuilder(
-                stream: bloc.itemCount.stream,
-                initialData: bloc.itemCount.value,
+                // stream: bloc.itemCount.stream,
+                // initialData: bloc.itemCount.value,
                 builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                   return IconButton(
                       icon: Text("${snapshot.data}"),
                       onPressed: () {
-                        bloc.changeItemCount.add(100);
+                        // bloc.changeItemCount.add(100);
                       });
                 }),
           ],
@@ -28,7 +28,7 @@ class ToDoEdit extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.done),
           onPressed: () {
-            bloc.saveItem.add(context);
+            // bloc.saveItem.add(context);
           },
         ),
         body: Padding(
