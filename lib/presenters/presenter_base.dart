@@ -9,7 +9,14 @@ abstract class BaseInputEvent {
   BaseInputEvent();
 }
 
-abstract class PresenterBase<T extends BaseInputEvent> {
+abstract class WireframeBase {
+  NavigatorState navigator;
+  void initiate(BuildContext context){
+    navigator = Navigator.of(context);
+  }
+}
+
+abstract class PresenterBase<T extends BaseInputEvent, W extends WireframeBase> {
   AccessorController _controller = new AccessorController();
 
   StreamController<T> _eventsStreamController = StreamController.broadcast();
@@ -18,17 +25,19 @@ abstract class PresenterBase<T extends BaseInputEvent> {
   Set<int> _myNotifications = {};
   Set<int> _myActions = {};
   bool initiated = false;
+  W wireframe;
 
-  PresenterBase() {
+  PresenterBase(this.wireframe) {
     print("New bloc presenter: $runtimeType");
   }
   void doInitiate(BuildContext context) {
+    wireframe.initiate(context);
     if (initiated) return;
-    initiate(context);
+    initiate();
     initiated = true;
   }
 
-  void initiate(BuildContext context);
+  void initiate();
   void addInputEventHandler<E extends T>(void handler(E event)) {
     _eventsStreamController.stream
         .where((event) => (event is E)).cast<E>()

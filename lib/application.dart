@@ -3,7 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'utilities/translations/apptranslationdelegate.dart';
 import 'utilities/translations/apptranslator.dart';
 import 'views/index.dart' as pages;
-import 'presenters/index.dart' as bloc_presenters;
+import 'presenters/index.dart' as presenters;
 import 'presenters/presenter_provider.dart';
 import 'application_theme.dart';
 
@@ -36,9 +36,9 @@ class _ApplicationState extends State<Application> {
       ],
       supportedLocales: apptranslator.supportedLocales(),
       theme: ApplicationThemeData.themeData(),
-      home: PresenterProvider<bloc_presenters.Initial>(
+      home: PresenterProvider<presenters.Initial>(
         child: pages.Initial(),
-        bloc: bloc_presenters.Initial(),
+        presenter: presenters.Initial(),
         route: "",
         onDispose: (String routeName) {},
       ),
@@ -58,9 +58,9 @@ class _ApplicationState extends State<Application> {
                 res = pages.Main();
                 break;
               case '/Initial':
-                res = PresenterProvider<bloc_presenters.Initial>(
+                res = PresenterProvider<presenters.Initial>(
                   child: pages.Initial(),
-                  bloc: bloc_presenters.Initial(),
+                  presenter: presenters.Initial(),
                   route: settings.name,
                   onDispose: (String routeName) {
                     _routesCache.remove(routeName);
@@ -68,9 +68,9 @@ class _ApplicationState extends State<Application> {
                 );
                 break;
               case '/Main/ToDoList':
-                res = PresenterProvider<bloc_presenters.ToDoList>(
+                res = PresenterProvider<presenters.ToDoList>(
                   child: pages.ToDoList(),
-                  bloc: bloc_presenters.ToDoList(),
+                  presenter: presenters.ToDoList(),
                   route: settings.name,
                   onDispose: (String routeName) {
                     _routesCache.remove(routeName);
@@ -78,9 +78,9 @@ class _ApplicationState extends State<Application> {
                 );
                 break;
               case '/Main/ToDoList/ToDoEdit':
-                res = PresenterProvider<bloc_presenters.ToDoEdit>(
+                res = PresenterProvider<presenters.ToDoEdit>(
                   child: pages.ToDoEdit(),
-                  bloc: bloc_presenters.ToDoEdit.edit(settings.arguments),
+                  presenter: presenters.ToDoEdit.edit(settings.arguments),
                   route: settings.name,
                   onDispose: (String routeName) {
                     _routesCache.remove(routeName);
@@ -88,9 +88,9 @@ class _ApplicationState extends State<Application> {
                 );
                 break;
               case '/Main/ToDoList/ToDoCreate':
-                res = PresenterProvider<bloc_presenters.ToDoEdit>(
+                res = PresenterProvider<presenters.ToDoEdit>(
                   child: pages.ToDoEdit(),
-                  bloc: bloc_presenters.ToDoEdit(),
+                  presenter: presenters.ToDoEdit(),
                   route: settings.name,
                   onDispose: (String routeName) {
                     _routesCache.remove(routeName);

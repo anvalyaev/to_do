@@ -8,12 +8,12 @@ class PresenterProvider<T extends PresenterBase>
   PresenterProvider({
     Key key,
     @required this.child,
-    @required this.bloc,
+    @required this.presenter,
     this.route,
     this.onDispose,
   }) : super(key: key);
 
-  final T bloc;
+  final T presenter;
   final Widget child;
   final String route;
   final Function onDispose;
@@ -24,7 +24,7 @@ class PresenterProvider<T extends PresenterBase>
   static T of<T extends PresenterBase>(BuildContext context) {
     final type = _typeOf<PresenterProvider<T>>();
     PresenterProvider<T> provider = context.ancestorWidgetOfExactType(type);
-    return provider.bloc;
+    return provider.presenter;
   }
 
   static Type _typeOf<T>() => T;
@@ -38,7 +38,7 @@ class _ProviderState<T>
   _ProviderState(this.route, this.onDispose);
   @override
   void dispose() {
-    widget.bloc.dispose();
+    widget.presenter.dispose();
     super.dispose();
     if ((route != null) && (onDispose != null)) {
       onDispose(route);
@@ -47,7 +47,7 @@ class _ProviderState<T>
 
   @override
   Widget build(BuildContext context) {
-    widget.bloc.doInitiate(context);
+    widget.presenter.doInitiate(context);
     return widget.child;
   }
 }

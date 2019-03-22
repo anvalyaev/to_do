@@ -47,17 +47,28 @@ class ToDoListChangeEvent extends ToDoListEvent {
   ToDoListChangeEvent(this.change);
 }
 
+class ToDoListWireframe extends WireframeBase {
+  void showCreateItem() {
+    navigator.pushNamed('/Main/ToDoList/ToDoCreate');
+  }
+
+  void showEditItem(String id) {
+    navigator.pushNamed('/Main/ToDoList/ToDoEdit', arguments: id);
+  }
+}
+
 enum Filter { all, done, todo }
 
-class ToDoList extends PresenterBase<ToDoListEvent> {
+class ToDoList extends PresenterBase<ToDoListEvent, ToDoListWireframe> {
+  ToDoList() : super(ToDoListWireframe());
   Stream<notifications.ToDoListNotifier> toDoListNotificationsStream;
   ValueNotifier<Filter> filter = ValueNotifier(Filter.all);
   ValueNotifier<List<ToDoItem>> toDoItems = ValueNotifier([]);
 
   @override
-  void initiate(BuildContext context) {
+  void initiate() {
     toDoListNotificationsStream = subscribeTo(notifications.ToDoListNotifier());
-    toDoListNotificationsStream.listen((notification){
+    toDoListNotificationsStream.listen((notification) {
       print("Notification: ${notification.change}");
     });
     toDoListNotificationsStream.where((notification) {
@@ -72,12 +83,15 @@ class ToDoList extends PresenterBase<ToDoListEvent> {
     toDoListNotificationsStream.where((notification) {
       return notification.change.event == to_do_list.Event.change_item;
     }).listen((notification) {
-      print("before to_do_list.Event.change_item: ${toDoItems.value}, ${toDoItems.hasListeners}");
+      print(
+          "before to_do_list.Event.change_item: ${toDoItems.value}, ${toDoItems.hasListeners}");
       int index = toDoItems.value.indexWhere((ToDoItem currentItem) {
         return currentItem.id == notification.change.delta.id;
       });
-      toDoItems.value.replaceRange(index, index + 1, [notification.change.delta]);
-      print("after to_do_list.Event.change_item: ${toDoItems.value}, ${toDoItems.hasListeners}");
+      toDoItems.value
+          .replaceRange(index, index + 1, [notification.change.delta]);
+      print(
+          "after to_do_list.Event.change_item: ${toDoItems.value}, ${toDoItems.hasListeners}");
       toDoItems.notifyListeners();
     });
 
@@ -132,7 +146,7 @@ class ToDoList extends PresenterBase<ToDoListEvent> {
     });
 
     addInputEventHandler<ShowCreateItem>((event) {
-      Navigator.of(context).pushNamed('/Main/ToDoList/ToDoCreate');
+      wireframe.showCreateItem();
     });
 
     addInputEventHandler<DeleateAll>((event) {
@@ -140,8 +154,7 @@ class ToDoList extends PresenterBase<ToDoListEvent> {
     });
 
     addInputEventHandler<ShowEditItem>((event) {
-      Navigator.of(context)
-          .pushNamed('/Main/ToDoList/ToDoEdit', arguments: event.id);
+      wireframe.showEditItem(event.id);
     });
 
     execute(actions.GetToDoList(done: filterDone(filter.value)))

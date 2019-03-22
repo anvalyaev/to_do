@@ -22,7 +22,13 @@ class ChangeItemCount extends ToDoEditEvent {
   ChangeItemCount({@required this.count});
 }
 
-class ToDoEdit extends PresenterBase {
+class ToDoEditWireframe extends WireframeBase {
+  void hide(){
+    navigator.pop();
+  }
+}
+
+class ToDoEdit extends PresenterBase<ToDoEditEvent, ToDoEditWireframe> {
   String toDoItemId;
   ValueNotifier<int> color = ValueNotifier(0xFFFFFFFF);
   ValueNotifier<int> itemCount = ValueNotifier(1);
@@ -54,21 +60,10 @@ class ToDoEdit extends PresenterBase {
     Color(0xFF881111),
   ];
 
-  // class Wireframe {
-  //    final BuildContext _context;
-
-  //    AppNavigation(this._context);
-
-  //    void pop() {}
-  //    void gotoMain() {}
-  //    void gotoTodoList() {}
-
-  // }
-
-  ToDoEdit();
-  ToDoEdit.edit(this.toDoItemId);
+  ToDoEdit():super(ToDoEditWireframe());
+  ToDoEdit.edit(this.toDoItemId):super(ToDoEditWireframe());
   @override
-  void initiate(BuildContext context) {
+  void initiate() {
     addInputEventHandler<SaveItem>((event) {
       if (busy.value) return;
       busy.value = true;
@@ -91,7 +86,7 @@ class ToDoEdit extends PresenterBase {
           busy.value = false;
         });
       }
-      Navigator.of(context).pop();
+      wireframe.hide();
     });
 
     addInputEventHandler<ChangeItemCount>((event) {
