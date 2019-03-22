@@ -8,8 +8,7 @@ abstract class NotificationBase{
   void grabData(EntityBase model);
   
   int get id => _id;
-
-  dynamic data;
+  
   int _id;
   static int counter = 0;
 }

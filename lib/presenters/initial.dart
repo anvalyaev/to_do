@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'bloc_presenter_base.dart';
+import 'presenter_base.dart';
 import '../interactor/actions/initial_storage.dart' as actions;
 
-class Initial extends BlocPresenterBase {
+class Initial extends PresenterBase {
   @override
   void initiate(BuildContext context) {
     print("void initiate(BuildContext context)");

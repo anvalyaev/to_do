@@ -4,34 +4,22 @@ import '../interactor/accessor_controller.dart';
 import '../interactor/actions/action_base.dart';
 import '../interactor/notifications/notification_base.dart';
 
-abstract class StreamConstructor<T, B extends BlocPresenterBase> {
-  B bloc;
-  Stream<T> stream;
-  T current;
-  StreamConstructor(this.bloc){
-    stream = _constructStream();
-  }
-  Stream<T> _constructStream();
+
+abstract class BaseInputEvent {
+  BaseInputEvent();
 }
 
-abstract class BaseBlocEvent {
-  BaseBlocEvent(this.isUserEvent);
-  final bool isUserEvent;
-}
-
-abstract class BlocPresenterBase<T extends BaseBlocEvent> {
+abstract class PresenterBase<T extends BaseInputEvent> {
   AccessorController _controller = new AccessorController();
 
-  List<StreamSubscription> _subscriptions = [];
   StreamController<T> _eventsStreamController = StreamController.broadcast();
   StreamSink get events => _eventsStreamController.sink;
-  Stream<T> get streamEvents => _eventsStreamController.stream;
 
   Set<int> _myNotifications = {};
   Set<int> _myActions = {};
   bool initiated = false;
 
-  BlocPresenterBase() {
+  PresenterBase() {
     print("New bloc presenter: $runtimeType");
   }
   void doInitiate(BuildContext context) {
@@ -41,9 +29,9 @@ abstract class BlocPresenterBase<T extends BaseBlocEvent> {
   }
 
   void initiate(BuildContext context);
-  void addUserInputHandler<E extends T>(void handler(E event)) {
-    streamEvents
-        .where((event) => (event is E) && (event.isUserEvent))
+  void addInputEventHandler<E extends T>(void handler(E event)) {
+    _eventsStreamController.stream
+        .where((event) => (event is E)).cast<E>()
         .listen(handler);
   }
 
@@ -65,31 +53,19 @@ abstract class BlocPresenterBase<T extends BaseBlocEvent> {
     return actionRes;
   }
 
-  void subscribeTo(NotificationBase notification,
-      void onNotify(NotificationBase notification)) {
-    bool isMyNotification(NotificationBase notification) {
-      return _myNotifications.contains(notification.id);
-    }
-
+  Stream<T> subscribeTo<T extends NotificationBase>(T notification) {
     _myNotifications.add(notification.id);
-    _subscriptions.add(_controller.notificationStream
-        .where(isMyNotification)
-        .listen(onNotify));
     _controller.addNotification(notification);
+    return _controller.notificationStream.where((notification) => _myNotifications.contains(notification.id)).cast<T>();
   }
 
   void dispose() {
     print("Dispose bloc presenter: $runtimeType");
-    for (StreamSubscription subscription in _subscriptions) {
-      subscription.cancel();
-    }
-    _subscriptions.clear();
 
     for (int notificationId in _myNotifications) {
       _controller.removeNotification(notificationId);
     }
     _eventsStreamController.close();
-    _myNotifications.clear();
     _myNotifications.clear();
     initiated = false;
   }

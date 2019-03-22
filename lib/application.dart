@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'utilities/translations/apptranslationdelegate.dart';
 import 'utilities/translations/apptranslator.dart';
-import 'pages/index.dart' as pages;
-import 'bloc_presenters/index.dart' as bloc_presenters;
-import 'bloc_presenters/bloc_presenter_provider.dart';
+import 'views/index.dart' as pages;
+import 'presenters/index.dart' as bloc_presenters;
+import 'presenters/presenter_provider.dart';
 import 'application_theme.dart';
 
 class Application extends StatefulWidget {
@@ -36,7 +36,7 @@ class _ApplicationState extends State<Application> {
       ],
       supportedLocales: apptranslator.supportedLocales(),
       theme: ApplicationThemeData.themeData(),
-      home: BlocPresenterProvider<bloc_presenters.Initial>(
+      home: PresenterProvider<bloc_presenters.Initial>(
         child: pages.Initial(),
         bloc: bloc_presenters.Initial(),
         route: "",
@@ -58,7 +58,7 @@ class _ApplicationState extends State<Application> {
                 res = pages.Main();
                 break;
               case '/Initial':
-                res = BlocPresenterProvider<bloc_presenters.Initial>(
+                res = PresenterProvider<bloc_presenters.Initial>(
                   child: pages.Initial(),
                   bloc: bloc_presenters.Initial(),
                   route: settings.name,
@@ -68,7 +68,7 @@ class _ApplicationState extends State<Application> {
                 );
                 break;
               case '/Main/ToDoList':
-                res = BlocPresenterProvider<bloc_presenters.ToDoList>(
+                res = PresenterProvider<bloc_presenters.ToDoList>(
                   child: pages.ToDoList(),
                   bloc: bloc_presenters.ToDoList(),
                   route: settings.name,
@@ -78,7 +78,7 @@ class _ApplicationState extends State<Application> {
                 );
                 break;
               case '/Main/ToDoList/ToDoEdit':
-                res = BlocPresenterProvider<bloc_presenters.ToDoEdit>(
+                res = PresenterProvider<bloc_presenters.ToDoEdit>(
                   child: pages.ToDoEdit(),
                   bloc: bloc_presenters.ToDoEdit.edit(settings.arguments),
                   route: settings.name,
@@ -88,7 +88,7 @@ class _ApplicationState extends State<Application> {
                 );
                 break;
               case '/Main/ToDoList/ToDoCreate':
-                res = BlocPresenterProvider<bloc_presenters.ToDoEdit>(
+                res = PresenterProvider<bloc_presenters.ToDoEdit>(
                   child: pages.ToDoEdit(),
                   bloc: bloc_presenters.ToDoEdit(),
                   route: settings.name,

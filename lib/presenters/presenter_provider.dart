@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'bloc_presenter_base.dart';
+import 'presenter_base.dart';
 
-T provider<T extends BlocPresenterBase>() {}
+T provider<T extends PresenterBase>() {}
 
-class BlocPresenterProvider<T extends BlocPresenterBase>
+class PresenterProvider<T extends PresenterBase>
     extends StatefulWidget {
-  BlocPresenterProvider({
+  PresenterProvider({
     Key key,
     @required this.child,
     @required this.bloc,
@@ -18,24 +18,24 @@ class BlocPresenterProvider<T extends BlocPresenterBase>
   final String route;
   final Function onDispose;
   @override
-  _BlocProviderState<T> createState() =>
-      _BlocProviderState<T>(route, onDispose);
+  _ProviderState<T> createState() =>
+      _ProviderState<T>(route, onDispose);
 
-  static T of<T extends BlocPresenterBase>(BuildContext context) {
-    final type = _typeOf<BlocPresenterProvider<T>>();
-    BlocPresenterProvider<T> provider = context.ancestorWidgetOfExactType(type);
+  static T of<T extends PresenterBase>(BuildContext context) {
+    final type = _typeOf<PresenterProvider<T>>();
+    PresenterProvider<T> provider = context.ancestorWidgetOfExactType(type);
     return provider.bloc;
   }
 
   static Type _typeOf<T>() => T;
 }
 
-class _BlocProviderState<T>
-    extends State<BlocPresenterProvider<BlocPresenterBase>> {
+class _ProviderState<T>
+    extends State<PresenterProvider<PresenterBase>> {
   final String route;
   final Function onDispose;
 
-  _BlocProviderState(this.route, this.onDispose);
+  _ProviderState(this.route, this.onDispose);
   @override
   void dispose() {
     widget.bloc.dispose();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../bloc_presenters/index.dart' as bloc_presenters;
-import '../bloc_presenters/bloc_presenter_provider.dart';
+import '../presenters/to_do_edit.dart' as bloc_presenters;
+import '../presenters/presenter_provider.dart';
 import '../interactor/data_stores/database/repositories/to_do_item.dart';
 import '../utilities/translations/apptranslations.dart';
 
@@ -8,19 +8,18 @@ class ToDoEdit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc_presenters.ToDoEdit bloc =
-        BlocPresenterProvider.of<bloc_presenters.ToDoEdit>(context);
+        PresenterProvider.of<bloc_presenters.ToDoEdit>(context);
     return Scaffold(
         appBar: AppBar(
           title: Text(Translation.of(context).text("to_do_edit")),
           actions: <Widget>[
-            StreamBuilder(
-                // stream: bloc.itemCount.stream,
-                // initialData: bloc.itemCount.value,
-                builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+            ValueListenableBuilder(
+              valueListenable: bloc.itemCount,
+                builder: (BuildContext context, value, Widget child) {
                   return IconButton(
-                      icon: Text("${snapshot.data}"),
+                      icon: Text("$value"),
                       onPressed: () {
-                        // bloc.changeItemCount.add(100);
+                        bloc.events.add(bloc_presenters.ChangeItemCount(count:100));
                       });
                 }),
           ],
@@ -28,6 +27,7 @@ class ToDoEdit extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.done),
           onPressed: () {
+            bloc.events.add(bloc_presenters.SaveItem());
             // bloc.saveItem.add(context);
           },
         ),
