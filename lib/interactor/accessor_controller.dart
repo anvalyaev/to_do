@@ -24,7 +24,7 @@ class AccessorController extends Controller {
   List<ActionBase> _actionsBuffer = [];
   static final AccessorController _interator =
       new AccessorController._internal();
-  AccessorController._internal() {}
+  AccessorController._internal();
 
 
   Stream<NotificationBase> get notificationStream => _controller.stream;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../bloc_presenters/index.dart' as bloc_presenters;
-import '../bloc_presenters/bloc_presenter_provider.dart';
+import '../presenters/initial.dart' as bloc_presenters;
+import '../presenters/presenter_provider.dart';
 
 class Initial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final bloc_presenters.Initial bloc = BlocPresenterProvider.of<bloc_presenters.Initial>(context);
+    final bloc_presenters.Initial bloc = PresenterProvider.of<bloc_presenters.Initial>(context);
 
     return Scaffold(
       body: Center(

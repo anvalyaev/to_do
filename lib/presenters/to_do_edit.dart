@@ -1,19 +1,38 @@
 import 'package:flutter/material.dart';
-import 'bloc_presenter_base.dart';
+import 'presenter_base.dart';
 import '../interactor/actions/to_do.dart' as actions;
 import '../interactor/actions/action_base.dart' as actions;
 import '../interactor/notifications/to_do_list_notifier.dart' as notifications;
 import '../interactor/notifications/notification_base.dart';
 import '../interactor/data_stores/database/repositories/to_do_item.dart';
 
-class ToDoEdit extends BlocPresenterBase {
+class ToDoEditEvent extends BaseInputEvent {}
+
+class SetColor extends ToDoEditEvent {
+  final int color;
+  SetColor({@required this.color});
+}
+
+class SaveItem extends ToDoEditEvent {
+  SaveItem();
+}
+
+class ChangeItemCount extends ToDoEditEvent {
+  final int count;
+  ChangeItemCount({@required this.count});
+}
+
+class ToDoEditWireframe extends WireframeBase {
+  void hide(){
+    navigator.pop();
+  }
+}
+
+class ToDoEdit extends PresenterBase<ToDoEditEvent, ToDoEditWireframe> {
   String toDoItemId;
-  Output<int> color;
-  Output<int> itemCount;
-  Output<bool> busy;
-  Input<int> setColor;
-  Input saveItem;
-  Input<int> changeItemCount;
+  ValueNotifier<int> color = ValueNotifier(0xFFFFFFFF);
+  ValueNotifier<int> itemCount = ValueNotifier(1);
+  ValueNotifier<bool> busy = ValueNotifier(false);
 
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -41,21 +60,11 @@ class ToDoEdit extends BlocPresenterBase {
     Color(0xFF881111),
   ];
 
-  ToDoEdit();
-  ToDoEdit.edit(this.toDoItemId);
+  ToDoEdit():super(ToDoEditWireframe());
+  ToDoEdit.edit(this.toDoItemId):super(ToDoEditWireframe());
   @override
-  void initiate(BuildContext context) {
-    color = Output.of(this, 0xFFFFFFFF);
-    busy = Output.of(this, false);
-    itemCount = Output.of(this, 1);
-    setColor = Input.of(this, handler: (data) {
-      color.value = data;
-    });
-
-    changeItemCount =Input.of(this, handler: (data){
-      itemCount.value = itemCount.value + data;
-    });
-    saveItem = Input.of(this, handler: (data) {
+  void initiate() {
+    addInputEventHandler<SaveItem>((event) {
       if (busy.value) return;
       busy.value = true;
       if (toDoItemId == null) {
@@ -66,19 +75,24 @@ class ToDoEdit extends BlocPresenterBase {
                 count: itemCount.value))
             .whenComplete(() {
           busy.value = false;
-          
         });
       } else {
-        execute(actions.EditToDoItem(toDoItemId,
-                title: titleController.text,
-                description: descriptionController.text,
-                color: color.value,))
-            .whenComplete(() {
+        execute(actions.EditToDoItem(
+          toDoItemId,
+          title: titleController.text,
+          description: descriptionController.text,
+          color: color.value,
+        )).whenComplete(() {
           busy.value = false;
         });
       }
-      Navigator.of(context).pop();
+      wireframe.hide();
     });
+
+    addInputEventHandler<ChangeItemCount>((event) {
+      itemCount.value = itemCount.value + event.count;
+    });
+
     if (toDoItemId != null) {
       busy.value = true;
       execute(actions.GetToDoItem(toDoItemId))

@@ -1,18 +1,25 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'bloc_presenter_base.dart';
+import 'presenter_base.dart';
 import '../interactor/actions/initial_storage.dart' as actions;
 
-class Initial extends BlocPresenterBase {
+class InitiaEvent extends BaseInputEvent {}
+
+class InitialWireframe extends WireframeBase {
+  void showApplication(){
+    navigator.pushReplacementNamed('/Main/ToDoList');
+  }
+}
+class Initial extends PresenterBase<InitiaEvent, InitialWireframe> {
+  Initial():super(InitialWireframe());
   @override
-  void initiate(BuildContext context) {
+  void initiate() {
     print("void initiate(BuildContext context)");
     getApplicationDocumentsDirectory().then((Directory dir){
       execute<actions.InitialStorage>(actions.InitialStorage(dir.path)).whenComplete((){
-        Navigator.of(context).pushReplacementNamed('/Main/ToDoList');
+        wireframe.showApplication();
       });
-    });
-    
+    }); 
   }
 }

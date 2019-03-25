@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../bloc_presenters/index.dart' as bloc_presenters;
-import '../bloc_presenters/bloc_presenter_provider.dart';
+import '../presenters/to_do_list.dart' as bloc_presenters;
+import '../presenters/presenter_provider.dart';
 import '../interactor/data_stores/database/repositories/to_do_item.dart';
 import '../utilities/translations/apptranslations.dart';
 
@@ -24,34 +24,33 @@ class ToDoList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc_presenters.ToDoList bloc =
-        BlocPresenterProvider.of<bloc_presenters.ToDoList>(context);
+        PresenterProvider.of<bloc_presenters.ToDoList>(context);
 
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
-                    Center(
-              child: StreamBuilder(
-            stream: bloc.list.stream,
-            initialData: bloc.list.value,
+          Center(
+              child: ValueListenableBuilder(
+            valueListenable: bloc.toDoItems,
             builder:
-                (BuildContext context, AsyncSnapshot<List<ToDoItem>> snapshot) {
-              return Text("${snapshot.data.length}");
+                (BuildContext context, List<ToDoItem> value, Widget child) {
+              return Text("${value.length}");
             },
           )),
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-              bloc.deleateAll.add(null);
+              bloc.events.add(bloc_presenters.DeleateAll());
             },
           ),
-          StreamBuilder(
-            stream: bloc.filter.stream,
-            initialData: bloc.filter.value,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
+          ValueListenableBuilder(
+            valueListenable: bloc.filter,
+            builder: (BuildContext context, bloc_presenters.Filter value,
+                Widget child) {
               return IconButton(
-                icon: iconForFilter(snapshot.data),
+                icon: iconForFilter(value),
                 onPressed: () {
-                  bloc.changeFilter.add(null);
+                  bloc.events.add(bloc_presenters.ChangeFilter());
                 },
               );
             },
@@ -59,36 +58,33 @@ class ToDoList extends StatelessWidget {
         ],
         title: Text(Translation.of(context).text("to_do_list")),
       ),
-      body: StreamBuilder(
-          stream: bloc.list.stream,
-          initialData: bloc.list.value,
-          builder:
-              (BuildContext context, AsyncSnapshot<List<ToDoItem>> snapshot) {
-            if (snapshot.hasData) {
+      body: ValueListenableBuilder(
+          valueListenable: bloc.toDoItems,
+          builder: (BuildContext context, List<ToDoItem> value, Widget child) {
+            {
+              print("rebuild: $value");
               return ListView.builder(
-                itemCount: snapshot.data.length,
+                itemCount: value.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Dismissible(
-                      key: Key(snapshot.data[index].id),
+                      key: Key(value[index].id),
                       onDismissed: (direction) {
-                        bloc.removeItem.add(snapshot.data[index].id);
+                        bloc.events.add(bloc_presenters.RemoveItem(id: value[index].id));
                       },
                       child: Card(
                         child: ListTile(
-                          title: Text(snapshot.data[index].title),
-                          subtitle: Text(snapshot.data[index].description),
+                          title: Text(value[index].title),
+                          subtitle: Text(value[index].description),
                           trailing: IconButton(
                             icon: Icon(Icons.edit),
                             onPressed: () {
-                              bloc.showEditItem.add(snapshot.data[index].id);
+                              bloc.events.add(bloc_presenters.ShowEditItem(id: value[index].id));
                             },
                           ),
                           leading: Checkbox(
-                            value: snapshot.data[index].done,
+                            value: value[index].done,
                             onChanged: (bool val) {
-                              bloc.changeStatusItem.add(
-                                  bloc_presenters.ChangeStatusItemData(
-                                      snapshot.data[index].id, val));
+                              bloc.events.add(bloc_presenters.ChangeStatusItem(id: value[index].id, done: val));
                             },
                           ),
                         ),
@@ -96,12 +92,11 @@ class ToDoList extends StatelessWidget {
                 },
               );
             }
-            return Container();
           }),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          bloc.showCreateItem.add(context);
+          bloc.events.add(bloc_presenters.ShowCreateItem());
         },
       ),
     );

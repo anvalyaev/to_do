@@ -4,6 +4,7 @@ import '../entities/to_do_list.dart';
 import '../data_stores/database/repositories/to_do_item.dart';
 
 class ToDoListNotifier extends NotificationBase {
+  LastChange change;
   final bool done;
   ToDoListNotifier({this.done});
   bool whenNotify(EntityBase entity) {
@@ -23,6 +24,6 @@ class ToDoListNotifier extends NotificationBase {
   void grabData(EntityBase entity) {
     if (!(entity is IToDoList)) return;
     IToDoList toDoList = entity;
-    data = toDoList.lastChange;
+    change = toDoList.lastChange;
   }
 }
